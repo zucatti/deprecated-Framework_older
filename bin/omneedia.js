@@ -6,8 +6,8 @@
 
 $_VERSION = "0.8.9c";
 
-CDN = "http://omneedia.github.io/cdn"; //PROD
-//CDN = "/cdn"; // DEBUG
+//CDN = "http://omneedia.github.io/cdn"; //PROD
+CDN = "/cdn"; // DEBUG
 
 
 function __RESTART__() {
@@ -708,7 +708,7 @@ function make_ws()
 			make_mvc();
 		});
 	} else {
-		for (var i=0;i<Settings.API.length;i++)
+		for (var i=1;i<Settings.API.length;i++)
 		{
 			// charger le script
 			console.log('    - Adding service descriptor '+Settings.API[i]);
@@ -757,7 +757,7 @@ function getView(v,t)
 			getView(require[i],t);
 		};
 	} catch (e) {
-
+		//console.log(e);
 	};
 	//console.log(workspace+"view"+path.sep+v.trim()+".js");
 	t[t.length]=workspace+"view"+path.sep+v.trim()+".js";
@@ -861,6 +861,7 @@ function make_app()
 		var bootstrap = UglifyJS.minify(PROJECT_DEV+path.sep+"webapp"+path.sep+"bootstrap.js");
 		bootstrap=bootstrap.code;
 	}
+	//console.log(bootstrap);
 	console.log('  - Compiling libraries');
 	var libraries = UglifyJS.minify(PROJECT_DEV+path.sep+"webapp"+path.sep+"libraries.js");
 	libraries=libraries.code;
@@ -2067,6 +2068,7 @@ function App_Update(nn,cb)
 
 		Settings.AUTHORS=[];
 		Settings.API=[];
+		Settings.API.push('__QUERY__');
 		for (var i=0;i<manifest.api.length;i++) Settings.API.push(manifest.api[i]);
 		
 		Settings.AUTHORS.push({
@@ -2111,6 +2113,7 @@ function App_Update(nn,cb)
 		
 		Settings.VERSION=manifest.version;
 		Settings.BUILD=manifest.build;
+		
 		fs.writeFileSync(PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Settings.js','Settings='+JSON.stringify(Settings));		
 		var ndx=fs.readFileSync(PROJECT_HOME+path.sep+'src'+path.sep+'index.html','utf-8');
 		ndx=ndx.split('<title>')[0]+'<title>'+manifest.title+'</title>'+ndx.split('</title>')[1];		
@@ -2606,6 +2609,9 @@ asciimo.write(" omneedia", "Colossal", function(art){
 				delete require.cache[name];
 			}catch(e){
 			};			
+			if (api.action=="__QUERY__")
+			var x=require(__dirname+path.sep+"node_modules"+path.sep+"db"+path.sep+api.action+".js");
+			else
 			var x=require(PROJECT_WEB+path.sep+"Contents"+path.sep+"Services"+path.sep+api.action+".js");
 			x.using=function(unit) {
 
@@ -2973,9 +2979,33 @@ asciimo.write(" omneedia", "Colossal", function(art){
 					REMOTE_API.descriptor="App.REMOTING_API";
 					REMOTE_API.actions={};
 					REMOTE_API.actions[req.param('ns')]=[];
-					if (!fs.existsSync(PROJECT_WEB+path.sep+"Contents"+path.sep+"Services"+path.sep+req.param('ns')+".js")) {
-						res.end('');
-						return;
+					
+					if (req.param('ns').indexOf("__QUERY__")==-1) {
+						if (!fs.existsSync(PROJECT_WEB+path.sep+"Contents"+path.sep+"Services"+path.sep+req.param('ns')+".js")) {
+							res.end('');
+							return;
+						};
+					} else {		
+						if (!fs.existsSync(__dirname+path.sep+"node_modules"+path.sep+"db"+path.sep+"__QUERY__.js")) {
+							res.end('');
+							return;
+						} else {
+							var _api=require(__dirname+path.sep+"node_modules"+path.sep+"db"+path.sep+"__QUERY__.js");
+							for (var e in _api) {
+								if (_api[e].toString().substr(0,8)=="function") {
+									var obj={};
+									obj.name=e;
+									var myfn=_api[e].toString().split('function')[1].split('{')[0].trim().split('(')[1].split(')')[0].split(',');
+									obj.len=myfn.length-1;
+									REMOTE_API.actions[req.param('ns')][REMOTE_API.actions[req.param('ns')].length]=obj;
+								}
+							};					
+							var str="if (Ext.syncRequire) Ext.syncRequire('Ext.direct.Manager');Ext.namespace('App');";
+							str+="App.REMOTING_API="+JSON.stringify(REMOTE_API,null)+";";
+							str+="Ext.Direct.addProvider(App.REMOTING_API);";
+							res.end(str);
+							return;
+						}						
 					};
 					var _api=require(PROJECT_WEB+path.sep+"Contents"+path.sep+"Services"+path.sep+req.param('ns')+".js");
 					for (var e in _api) {
@@ -3202,14 +3232,12 @@ asciimo.write(" omneedia", "Colossal", function(art){
 		});		
 		app.get('/db/:db/:table',function(req,res) {
 			res.header("Content-Type", "application/json; charset=utf-8");
-			var response = {
-				omneedia : {
-					engine: $_VERSION
-				},
-				namespace: PROJECT_NS,
-				db: req.param('db'),
-				table: req.param('table')
-			};			
+			var table=req.param('table').split('{')[0];
+			try {
+				var params=req.param('table').split('{')[1].split('}')[0];
+			} catch(e) {
+				var params="";
+			};
 			var uri = "";
 			for (var i=0;i<MSettings.db.length;i++) {
 				if (MSettings.db[i].name==req.param('db')) {
@@ -3217,52 +3245,30 @@ asciimo.write(" omneedia", "Colossal", function(art){
 				};
 			};
 			if (uri=="") res.end('Database namespace not found');
-			var db={
-				type: uri.split('://')[0],
-				host: uri.split('://')[1].split('@')[1].split(':')[0],
-				user: uri.split('://')[1].split('@')[0].split(':')[0],
-				pass: uri.split('://')[1].split('@')[0].split(':')[1],
-				name: uri.split('://')[1].split('@')[1].split('/')[1],
-				table: req.param('table')				
+			//res.end(req.param('table')+' '+JSON.stringify(req.query));
+			var dbi=require('db');
+			var SQL=[];
+			var fieldz=[];
+			var orderby=[];
+			SQL.push("SELECT");
+			if (params=="") SQL.push('*'); else {
+				params=params.split(',');
+				for (var i=0;i<params.length;i++) {
+					if (params[i].indexOf('+')>-1) {
+						orderby.push(params[i].substr(0,params[i].indexOf('+')-1));
+						fieldz.push(params[i].substr(0,params[i].indexOf('+')-1));
+					} else fieldz.push(params[i]);
+				};
+				SQL.push(fieldz.join(','));
 			};
-			if (uri.split('://')[1].split('@')[1].split(':').length>1) db.port=uri.split('://')[1].split('@')[1].split(':')[1].split('/')[0]*1; else db.port=3306;
-			response.key=-1;
-			response.fields=[];
-			response.field={};
-			if (db.type=="mysql") get_mysql_fields(db,res,response,fieldz);
+			SQL.push("FROM");
+			SQL.push(table);
+			SQL.push("WHERE");
+			SQL.push('-1');
+			dbi.model(req.param('db'),SQL.join(' '),function(e,r) {
+				res.end(JSON.stringify(r,null,4));
+			});
 		});	
-		app.get('/db/:db/:table/:fields',function(req,res) {		
-			res.header("Content-Type", "application/json; charset=utf-8");
-			var response = {
-				omneedia : {
-					engine: $_VERSION
-				},
-				namespace: PROJECT_NS,
-				db: req.param('db'),
-				table: req.param('table')
-			};
-			var uri = "";
-			for (var i=0;i<MSettings.db.length;i++) {
-				if (MSettings.db[i].name==req.param('db')) {
-					uri=MSettings.db[i].uri;
-				};
-			};
-			if (uri=="") res.end('Database namespace not found');
-			var db={
-				type: uri.split('://')[0],
-				host: uri.split('://')[1].split('@')[1].split(':')[0],
-				user: uri.split('://')[1].split('@')[0].split(':')[0],
-				pass: uri.split('://')[1].split('@')[0].split(':')[1],
-				name: uri.split('://')[1].split('@')[1].split('/')[1],
-				table: req.param('table'),
-				fields: req.param('fields')
-			};
-			if (uri.split('://')[1].split('@')[1].split(':').length>1) db.port=uri.split('://')[1].split('@')[1].split(':')[1].split('/')[0]*1; else db.port=3306;
-			response.key=-1;
-			response.fields=[];
-			response.field={};
-			if (db.type=="mysql") get_mysql_data(db,res,response);			
-		});
 		app.delete('/db/:db/:table',function(req,res) {
 			res.header("Content-Type", "application/json; charset=utf-8");
 			var arr={
@@ -3345,6 +3351,9 @@ asciimo.write(" omneedia", "Colossal", function(art){
 			};
 			_App.api = require(__dirname+path.sep+'node_modules'+path.sep+"api");
 			for (var i=0;i<Settings.API.length;i++) {
+				if (Settings.API[i]=="__QUERY__")
+				_App[Settings.API[i]]=require(__dirname+path.sep+'node_modules'+path.sep+'db'+path.sep+'__QUERY__.js');
+				else
 				_App[Settings.API[i]]=require(PROJECT_SYSTEM+path.sep+'..'+path.sep+'Contents'+path.sep+'Services'+path.sep+Settings.API[i]+'.js');
 				var self = _App[Settings.API[i]].model = {
 					_model: {
