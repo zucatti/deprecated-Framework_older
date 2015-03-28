@@ -4,7 +4,7 @@
  *
  */
 
-$_VERSION = "0.8.9c";
+$_VERSION = "0.8.9d";
 
 //CDN = "http://omneedia.github.io/cdn"; //PROD
 CDN = "/cdn"; // DEBUG
@@ -1690,6 +1690,7 @@ if (PROJECT_HOME!="-") {
 	//get args
 	for (var i=0;i<process.argv.length;i++) {
 		if (process.argv[i]=="start") var setmeup=process.argv[i+1];
+		if (process.argv[i]=="updatedb") var setmeup=process.argv[i+1];
 	};
 	
 	if (process.argv.indexOf("build")>-1) {
@@ -1900,6 +1901,78 @@ function do_get()
 	};
 }
 
+function App_Model_Db()
+{
+	if (setmeup) console.log("  + switch to settings ["+setmeup+"]\n");
+	if (fs.existsSync(PROJECT_HOME+path.sep+'etc'+path.sep+'settings-'+setmeup+'.json')) {
+		var _set=fs.readFileSync(PROJECT_HOME+path.sep+'etc'+path.sep+'settings-'+setmeup+'.json','utf-8');
+		MSettings=JSON.parse(_set);
+	} else {
+		var _set=fs.readFileSync(PROJECT_HOME+path.sep+'etc'+path.sep+'settings.json','utf-8');
+		MSettings=JSON.parse(_set);	
+	};
+	
+	console.log('  - Updating DB Scheme');
+	
+	if (!fs.existsSync(PROJECT_HOME+path.sep+'app.manifest')) {
+		PROJECT_HOME=pcwd;
+		PROJECT_DEV=PROJECT_HOME+path.sep+"dev";
+		PROJECT_WEB=PROJECT_HOME+path.sep+"src";
+		var manifest=PROJECT_HOME+path.sep+'app.manifest';
+		if (!fs.existsSync(manifest)) {
+			console.log('  ! Can\'t open manifest file.'.yellow);
+			return;
+		};
+		Manifest=JSON.parse(fs.readFileSync(manifest));		
+	};
+
+	var manifest=PROJECT_HOME+path.sep+'app.manifest';
+	var PACKAGE_NAME=PROJECT_HOME.split(path.sep)[PROJECT_HOME.split(path.sep).length-1];
+	var PACKAGE_COMPANY=PACKAGE_NAME.split(".")[PACKAGE_NAME.split(".").length-2].toUpperCase();
+	if (!fs.existsSync(manifest)) {
+		console.log('  ! Can\'t open manifest file.'.yellow);
+		return;
+	};
+	manifest=JSON.parse(fs.readFileSync(manifest));	
+	// list all databases
+	var dbo=manifest.db;
+	for (var i=0;i<dbo.length;i++) {
+		var mydb=dbo[i];
+		var c=-1;
+		for (var j=0;j<MSettings.db.length;j++) {
+			if (MSettings.db[j].name==mydb) c=j;
+		};
+		var setup=MSettings.db[c].uri;
+		var cmd=['sequelize-auto'];
+		if (setup.indexOf('mysql://')>-1) {
+			cmd.push('-e mysql');
+			cmd.push('-o "'+PROJECT_HOME+path.sep+"src"+path.sep+'Contents'+path.sep+'Db'+path.sep+mydb+'.scheme"');
+			setup=setup.split('mysql://')[1];
+			//mysql://root:root@127.0.0.1:3311/sequelize
+			var users=setup.split('@')[0];
+			var user=users.split(':')[0];
+			var password=users.split(':')[1];
+			cmd.push('-u '+user);
+			cmd.push('-x '+password);
+			var hosts=setup.split('@')[1].split('/')[0];
+			var host=hosts.split(':')[0];
+			try {
+				var port=hosts.split(':')[1];
+			}catch(e) {
+				var port=3306
+			};
+			cmd.push('-h '+host);
+			cmd.push('-p '+port);
+			var db=setup.split('/')[1];
+			cmd.push('-d '+db);			
+		};
+		if (fs.existsSync(PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Db'+path.sep+mydb+'.scheme')) fs.mkdirSync(PROJECT_HOME+path.sep+'Contents'+path.sep+'Db'+path.sep+mydb+'.scheme');
+		console.log(cmd.join(' '));
+		shelljs.exec(cmd.join(' '));
+	};
+	
+};
+
 function App_Update(nn,cb)
 {
 	console.log('  - Updating project');
@@ -1946,6 +2019,7 @@ function App_Update(nn,cb)
 			}
 		};
 	};
+
 	make_resources(function() {
 		
 		// updating manifest
@@ -2445,6 +2519,12 @@ asciimo.write(" omneedia", "Colossal", function(art){
 	if (argv.indexOf('update')>-1)
 	{
 		App_Update('');
+		return;
+	};
+
+	if (argv.indexOf('updatedb')>-1)
+	{
+		App_Model_Db();
 		return;
 	};
 	
