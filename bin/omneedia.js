@@ -6,8 +6,8 @@
 
 $_VERSION = "0.8.9d";
 
-//CDN = "http://omneedia.github.io/cdn"; //PROD
-CDN = "/cdn"; // DEBUG
+CDN = "http://omneedia.github.io/cdn"; //PROD
+//CDN = "/cdn"; // DEBUG
 
 
 function __RESTART__() {

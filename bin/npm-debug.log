@@ -1,0 +1,214 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files\\nodejs\\\\node.exe',
+1 verbose cli   'C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'install',
+1 verbose cli   'sequelize' ]
+2 info using npm@1.4.28
+3 info using node@v0.10.33
+4 verbose node symlink C:\Program Files\nodejs\\node.exe
+5 warn package.json bin.omneedia.framework@0.6.1 No repository field.
+6 warn package.json bin.omneedia.framework@0.6.1 No README data
+7 warn package.json xcas@0.1.0 No repository field.
+8 warn package.json sqwish@0.2.2 No repository field.
+9 verbose readDependencies using package.json deps
+10 verbose cache add [ 'sequelize', null ]
+11 verbose cache add name=undefined spec="sequelize" args=["sequelize",null]
+12 verbose parsed url { protocol: null,
+12 verbose parsed url   slashes: null,
+12 verbose parsed url   auth: null,
+12 verbose parsed url   host: null,
+12 verbose parsed url   port: null,
+12 verbose parsed url   hostname: null,
+12 verbose parsed url   hash: null,
+12 verbose parsed url   search: null,
+12 verbose parsed url   query: null,
+12 verbose parsed url   pathname: 'sequelize',
+12 verbose parsed url   path: 'sequelize',
+12 verbose parsed url   href: 'sequelize' }
+13 silly lockFile 35595a70-sequelize sequelize
+14 verbose lock sequelize C:\Users\steph_000\Desktop\omneedia\bin\.appdata\npm-cache\35595a70-sequelize.lock
+15 silly lockFile 35595a70-sequelize sequelize
+16 silly lockFile 35595a70-sequelize sequelize
+17 verbose addNamed [ 'sequelize', '' ]
+18 verbose addNamed [ null, '*' ]
+19 silly lockFile 57143dcb-sequelize sequelize@
+20 verbose lock sequelize@ C:\Users\steph_000\Desktop\omneedia\bin\.appdata\npm-cache\57143dcb-sequelize.lock
+21 silly addNameRange { name: 'sequelize', range: '*', hasData: false }
+22 verbose request where is /sequelize
+23 verbose request registry http://registry.npmjs.org/
+24 verbose request id 8b9c817bbd0f3b09
+25 verbose url raw /sequelize
+26 verbose url resolving [ 'http://registry.npmjs.org/', './sequelize' ]
+27 verbose url resolved http://registry.npmjs.org/sequelize
+28 verbose request where is http://registry.npmjs.org/sequelize
+29 info trying registry request attempt 1 at 09:01:43
+30 verbose etag "8Z29EUDYNLM4HHWINWBIL4EOJ"
+31 http GET http://registry.npmjs.org/sequelize
+32 info retry will retry, error on last attempt: Error: connect ETIMEDOUT
+33 info trying registry request attempt 2 at 09:02:14
+34 verbose etag "8Z29EUDYNLM4HHWINWBIL4EOJ"
+35 http GET http://registry.npmjs.org/sequelize
+36 info retry will retry, error on last attempt: Error: connect ETIMEDOUT
+37 info trying registry request attempt 3 at 09:03:35
+38 verbose etag "8Z29EUDYNLM4HHWINWBIL4EOJ"
+39 http GET http://registry.npmjs.org/sequelize
+40 silly registry.get cb [ 304, undefined ]
+41 verbose etag http://registry.npmjs.org/sequelize from cache
+42 silly addNameRange number 2 { name: 'sequelize', range: '*', hasData: true }
+43 silly addNameRange versions [ 'sequelize',
+43 silly addNameRange   [ '0.2.2',
+43 silly addNameRange     '0.2.3',
+43 silly addNameRange     '0.2.4',
+43 silly addNameRange     '0.2.5',
+43 silly addNameRange     '0.2.6',
+43 silly addNameRange     '0.3.0',
+43 silly addNameRange     '0.4.0',
+43 silly addNameRange     '0.4.1',
+43 silly addNameRange     '0.4.2',
+43 silly addNameRange     '0.4.3',
+43 silly addNameRange     '1.0.0',
+43 silly addNameRange     '1.0.1',
+43 silly addNameRange     '1.0.2',
+43 silly addNameRange     '1.1.0',
+43 silly addNameRange     '1.1.1',
+43 silly addNameRange     '1.1.2',
+43 silly addNameRange     '1.1.3',
+43 silly addNameRange     '1.1.4',
+43 silly addNameRange     '1.2.0',
+43 silly addNameRange     '1.2.1',
+43 silly addNameRange     '1.3.0',
+43 silly addNameRange     '1.3.1',
+43 silly addNameRange     '1.3.2',
+43 silly addNameRange     '1.3.3',
+43 silly addNameRange     '1.3.4',
+43 silly addNameRange     '1.3.5',
+43 silly addNameRange     '1.3.6',
+43 silly addNameRange     '1.3.7',
+43 silly addNameRange     '1.4.0',
+43 silly addNameRange     '1.4.1',
+43 silly addNameRange     '1.5.0-alpha',
+43 silly addNameRange     '1.5.0-beta',
+43 silly addNameRange     '1.5.0-beta-2',
+43 silly addNameRange     '1.5.0',
+43 silly addNameRange     '1.6.0-alpha-1',
+43 silly addNameRange     '1.6.0-alpha-2',
+43 silly addNameRange     '1.6.0-alpha-3',
+43 silly addNameRange     '1.6.0-beta-1',
+43 silly addNameRange     '1.6.0-beta-2',
+43 silly addNameRange     '1.6.0-beta-3',
+43 silly addNameRange     '1.6.0-beta4',
+43 silly addNameRange     '1.6.0',
+43 silly addNameRange     '1.7.0-alpha1',
+43 silly addNameRange     '1.7.0-alpha2',
+43 silly addNameRange     '2.0.0-alpha1',
+43 silly addNameRange     '2.0.0-alpha2',
+43 silly addNameRange     '1.7.0-alpha3',
+43 silly addNameRange     '2.0.0-alpha3',
+43 silly addNameRange     '1.7.0-beta.0',
+43 silly addNameRange     '2.0.0-beta.0',
+43 silly addNameRange     '1.7.0-beta.1',
+43 silly addNameRange     '2.0.0-beta.1',
+43 silly addNameRange     '1.7.0-beta.2',
+43 silly addNameRange     '2.0.0-beta.2',
+43 silly addNameRange     '1.7.0-beta.3b',
+43 silly addNameRange     '2.0.0-beta.3',
+43 silly addNameRange     '1.7.0-beta.4a',
+43 silly addNameRange     '2.0.0-beta.4',
+43 silly addNameRange     '1.7.0-beta.5',
+43 silly addNameRange     '2.0.0-beta.5',
+43 silly addNameRange     '1.7.0-beta6',
+43 silly addNameRange     '2.0.0-beta.6',
+43 silly addNameRange     '1.7.0-beta7',
+43 silly addNameRange     '2.0.0-beta.7',
+43 silly addNameRange     '2.0.0-beta.8',
+43 silly addNameRange     '1.7.0-beta8',
+43 silly addNameRange     '1.7.0-rc1',
+43 silly addNameRange     '2.0.0-dev1',
+43 silly addNameRange     '1.7.0-rc2',
+43 silly addNameRange     '2.0.0-dev2',
+43 silly addNameRange     '1.7.0-rc3',
+43 silly addNameRange     '2.0.0-dev3',
+43 silly addNameRange     '1.7.0-rc4',
+43 silly addNameRange     '2.0.0-dev4',
+43 silly addNameRange     '2.0.0-dev5',
+43 silly addNameRange     '1.7.0-rc5',
+43 silly addNameRange     '1.7.0-rc6',
+43 silly addNameRange     '2.0.0-dev6',
+43 silly addNameRange     '2.0.0-dev7',
+43 silly addNameRange     '1.7.0-rc7',
+43 silly addNameRange     '2.0.0-dev8',
+43 silly addNameRange     '1.7.0-rc8',
+43 silly addNameRange     '1.7.0-rc9',
+43 silly addNameRange     '2.0.0-dev9',
+43 silly addNameRange     '2.0.0-dev10',
+43 silly addNameRange     '1.7.0',
+43 silly addNameRange     '1.7.1',
+43 silly addNameRange     '1.7.2',
+43 silly addNameRange     '1.7.3',
+43 silly addNameRange     '2.0.0-dev11',
+43 silly addNameRange     '1.7.4',
+43 silly addNameRange     '1.7.5',
+43 silly addNameRange     '1.7.7',
+43 silly addNameRange     '1.7.8',
+43 silly addNameRange     '1.7.9',
+43 silly addNameRange     '2.0.0-dev12',
+43 silly addNameRange     '1.7.10',
+43 silly addNameRange     '2.0.0-dev13',
+43 silly addNameRange     '2.0.0-rc1',
+43 silly addNameRange     '2.0.0-rc2',
+43 silly addNameRange     '2.0.0-rc3',
+43 silly addNameRange     '2.0.0-rc4',
+43 silly addNameRange     '2.0.0-rc5',
+43 silly addNameRange     '2.0.0-rc6',
+43 silly addNameRange     '2.0.0-rc7',
+43 silly addNameRange     '2.0.0-rc8',
+43 silly addNameRange     '2.0.0',
+43 silly addNameRange     '2.0.1',
+43 silly addNameRange     '2.0.2',
+43 silly addNameRange     '2.0.3',
+43 silly addNameRange     '2.0.4',
+43 silly addNameRange     '2.0.5' ] ]
+44 verbose addNamed [ 'sequelize', '2.0.5' ]
+45 verbose addNamed [ '2.0.5', '2.0.5' ]
+46 silly lockFile cc5a5ac4-sequelize-2-0-5 sequelize@2.0.5
+47 verbose lock sequelize@2.0.5 C:\Users\steph_000\Desktop\omneedia\bin\.appdata\npm-cache\cc5a5ac4-sequelize-2-0-5.lock
+48 silly lockFile 4be3f7b3-rg-sequelize-sequelize-2-0-5-tgz http://registry.npmjs.org/sequelize/-/sequelize-2.0.5.tgz
+49 verbose lock http://registry.npmjs.org/sequelize/-/sequelize-2.0.5.tgz C:\Users\steph_000\Desktop\omneedia\bin\.appdata\npm-cache\4be3f7b3-rg-sequelize-sequelize-2-0-5-tgz.lock
+50 verbose addRemoteTarball [ 'http://registry.npmjs.org/sequelize/-/sequelize-2.0.5.tgz',
+50 verbose addRemoteTarball   '9e985705b69550ee99af979cc63d9f235abc707a' ]
+51 info retry fetch attempt 1 at 09:03:56
+52 verbose fetch to= C:\Users\STEPH_~1\AppData\Local\Temp\npm-7120-mNsnXXhM\registry.npmjs.org\sequelize\-\sequelize-2.0.5.tgz
+53 http GET http://registry.npmjs.org/sequelize/-/sequelize-2.0.5.tgz
+54 error fetch failed http://registry.npmjs.org/sequelize/-/sequelize-2.0.5.tgz
+55 info retry will retry, error on last attempt: Error: connect ETIMEDOUT
+56 info retry fetch attempt 2 at 09:04:27
+57 verbose fetch to= C:\Users\STEPH_~1\AppData\Local\Temp\npm-7120-mNsnXXhM\registry.npmjs.org\sequelize\-\sequelize-2.0.5.tgz
+58 http GET http://registry.npmjs.org/sequelize/-/sequelize-2.0.5.tgz
+59 error fetch failed http://registry.npmjs.org/sequelize/-/sequelize-2.0.5.tgz
+60 info retry will retry, error on last attempt: Error: connect ETIMEDOUT
+61 info retry fetch attempt 3 at 09:05:49
+62 verbose fetch to= C:\Users\STEPH_~1\AppData\Local\Temp\npm-7120-mNsnXXhM\registry.npmjs.org\sequelize\-\sequelize-2.0.5.tgz
+63 http GET http://registry.npmjs.org/sequelize/-/sequelize-2.0.5.tgz
+64 error fetch failed http://registry.npmjs.org/sequelize/-/sequelize-2.0.5.tgz
+65 silly lockFile 4be3f7b3-rg-sequelize-sequelize-2-0-5-tgz http://registry.npmjs.org/sequelize/-/sequelize-2.0.5.tgz
+66 silly lockFile 4be3f7b3-rg-sequelize-sequelize-2-0-5-tgz http://registry.npmjs.org/sequelize/-/sequelize-2.0.5.tgz
+67 silly lockFile cc5a5ac4-sequelize-2-0-5 sequelize@2.0.5
+68 silly lockFile cc5a5ac4-sequelize-2-0-5 sequelize@2.0.5
+69 silly lockFile 57143dcb-sequelize sequelize@
+70 silly lockFile 57143dcb-sequelize sequelize@
+71 error network connect ETIMEDOUT
+71 error network This is most likely not a problem with npm itself
+71 error network and is related to network connectivity.
+71 error network In most cases you are behind a proxy or have bad network settings.
+71 error network
+71 error network If you are behind a proxy, please make sure that the
+71 error network 'proxy' config is set properly.  See: 'npm help config'
+72 error System Windows_NT 6.2.9200
+73 error command "C:\\Program Files\\nodejs\\\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "install" "sequelize"
+74 error cwd C:\Users\steph_000\Desktop\omneedia\bin
+75 error node -v v0.10.33
+76 error npm -v 1.4.28
+77 error syscall connect
+78 error code ETIMEDOUT
+79 error errno ETIMEDOUT
+80 verbose exit [ 1, true ]
