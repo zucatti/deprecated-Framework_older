@@ -1,4 +1,5 @@
 /*
+/*
  *
  * OMNEEDIA Builder
  *
@@ -9,6 +10,29 @@ $_VERSION = "0.8.9d";
 CDN = "http://omneedia.github.io/cdn"; //PROD
 //CDN = "/cdn"; // DEBUG
 
+function _Task_execute(App,Tasker)
+{
+	if (fs.existsSync(PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Tasks'+path.sep+"jobs"+path.sep+Tasker.taskId+".json")) {
+		try {
+			var args=JSON.parse(fs.readFileSync(PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Tasks'+path.sep+"jobs"+path.sep+Tasker.taskId+".json",'utf-8'));
+		} catch(e) {
+			setTimeout(function() {
+				_Task_execute(App,Tasker);
+			},1000);
+		};		
+		if (args.length>0) App[Tasker.api](args[0],function(err,result) {
+			if (!err) {
+				args.shift();
+				fs.writeFileSync(PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Tasks'+path.sep+"jobs"+path.sep+Tasker.taskId+".json",JSON.stringify(args,null,4));
+				setTimeout(function() {
+					_Task_execute(App,Tasker);
+				},1000);
+			}
+		});  else setTimeout(function() {
+					_Task_execute(App,Tasker);
+			},1000);
+	};
+};
 
 function __RESTART__() {
 var _CP=require('child_process');
@@ -1691,6 +1715,7 @@ if (PROJECT_HOME!="-") {
 	for (var i=0;i<process.argv.length;i++) {
 		if (process.argv[i]=="start") var setmeup=process.argv[i+1];
 		if (process.argv[i]=="updatedb") var setmeup=process.argv[i+1];
+		if (process.argv[i]=="migrationdb") var setmeup=process.argv[i+1];
 	};
 	
 	if (process.argv.indexOf("build")>-1) {
@@ -1840,14 +1865,16 @@ function build_production()
 					return;
 				};
 				console.log('  - Publishing drone v'+p[p.length-1].split(require('path').sep)[0]);
-				scp.scp(PROJECT_HOME+path.sep+'builds'+path.sep+'production'+path.sep+p[p.length-1], {
-					host: ocfg.current["publish.host"],
-					username: 'omneedia',
-					password: ocfg.current["publish.password"],
-					path: '/omneedia/Cluster/var/packages'
-				}, function(err) {
-					if (err) console.log('  ! Publishing failed. Check your credentials',yellow); else console.log('  Done.');
-				})
+				if (ocfg.current["publish.port"]) var port=ocfg.current["publish.port"]; else var port=9191;
+				var req = Request.post("http://"+ocfg.current["publish.host"]+":"+ocfg.current["publish.port"]+"/upload", function (err, resp, body) {
+				  if (err) {
+					console.log('  ! Publishing failed. Check your config'.yellow);
+				  } else {
+					console.log('  Done.');
+				  }
+				});
+				var form = req.form();
+				form.append('file', fs.createReadStream(PROJECT_HOME+path.sep+'builds'+path.sep+'production'+path.sep+p[p.length-1]));
 				return;
 			};
 
@@ -1901,8 +1928,89 @@ function do_get()
 	};
 }
 
+function App_Migration_Db()
+{
+
+	console.log('  - Migrating DB Schemes');
+	
+	if (!fs.existsSync(PROJECT_HOME+path.sep+'app.manifest')) {
+		PROJECT_HOME=pcwd;
+		PROJECT_DEV=PROJECT_HOME+path.sep+"dev";
+		PROJECT_WEB=PROJECT_HOME+path.sep+"src";
+		var manifest=PROJECT_HOME+path.sep+'app.manifest';
+		if (!fs.existsSync(manifest)) {
+			console.log('  ! Can\'t open manifest file.'.yellow);
+			return;
+		};
+		Manifest=JSON.parse(fs.readFileSync(manifest));		
+	};
+
+	var manifest=PROJECT_HOME+path.sep+'app.manifest';
+	var PACKAGE_NAME=PROJECT_HOME.split(path.sep)[PROJECT_HOME.split(path.sep).length-1];
+	var PACKAGE_COMPANY=PACKAGE_NAME.split(".")[PACKAGE_NAME.split(".").length-2].toUpperCase();
+	if (!fs.existsSync(manifest)) {
+		console.log('  ! Can\'t open manifest file.'.yellow);
+		return;
+	};
+	manifest=JSON.parse(fs.readFileSync(manifest));	
+	// list all databases
+	var dbo=manifest.db;
+	
+	for (var i=0;i<dbo.length;i++) {
+
+
+		var mydb=dbo[i];
+		var c=-1;
+		for (var j=0;j<MSettings.db.length;j++) {
+			if (MSettings.db[j].name==mydb) c=j;
+		};
+		var setup=MSettings.db[c].uri;
+		var cmd=['sequelize-auto'];
+
+		setup=setup.split('://');
+		cmd.push('-e '+setup[0]);
+		setup=setup[1];
+		cmd.push('-o "'+PROJECT_HOME+path.sep+"src"+path.sep+'Contents'+path.sep+'Db'+path.sep+mydb+'.db"');			
+		var users=setup.split('@')[0];
+		var user=users.split(':')[0];
+		var password=users.split(':')[1];
+		cmd.push('-u '+user);
+		cmd.push('-x '+password);
+		var hosts=setup.split('@')[1].split('/')[0];
+		var host=hosts.split(':')[0];
+		try {
+			var port=hosts.split(':')[1];
+		}catch(e) {
+			var port=-1;
+		};
+		cmd.push('-h '+host);
+		if (port!=-1) cmd.push('-p '+port);
+		var db=setup.split('/')[1];
+		cmd.push('-d '+db);			
+
+		if (!fs.existsSync(PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Db'+path.sep+mydb+'.scheme')) 
+		{
+			fs.mkdirSync(PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Db'+path.sep+mydb+'.db');
+			console.log(cmd.join(' '));
+			shelljs.exec(cmd.join(' '));
+		}
+	}	
+		
+		
+};
+
 function App_Model_Db()
 {
+	function _SDATA(item)
+	{
+		// map type to sequelize
+		if (item=="int") return "DataTypes.INTEGER(11)";
+		if (item=="string") return "DataTypes.STRING(255)";
+		if (item=="datetime") return "DataTypes.DATE";
+		if (item=="date") return "DataTypes.DATE";
+		if (item=="float") return "DataTypes.FLOAT";
+		return false;
+	};
 	if (setmeup) console.log("  + switch to settings ["+setmeup+"]\n");
 	if (fs.existsSync(PROJECT_HOME+path.sep+'etc'+path.sep+'settings-'+setmeup+'.json')) {
 		var _set=fs.readFileSync(PROJECT_HOME+path.sep+'etc'+path.sep+'settings-'+setmeup+'.json','utf-8');
@@ -1938,37 +2046,80 @@ function App_Model_Db()
 	var dbo=manifest.db;
 	for (var i=0;i<dbo.length;i++) {
 		var mydb=dbo[i];
-		var c=-1;
 		for (var j=0;j<MSettings.db.length;j++) {
 			if (MSettings.db[j].name==mydb) c=j;
 		};
 		var setup=MSettings.db[c].uri;
-		var cmd=['sequelize-auto'];
-		if (setup.indexOf('mysql://')>-1) {
-			cmd.push('-e mysql');
-			cmd.push('-o "'+PROJECT_HOME+path.sep+"src"+path.sep+'Contents'+path.sep+'Db'+path.sep+mydb+'.scheme"');
-			setup=setup.split('mysql://')[1];
-			//mysql://root:root@127.0.0.1:3311/sequelize
-			var users=setup.split('@')[0];
-			var user=users.split(':')[0];
-			var password=users.split(':')[1];
-			cmd.push('-u '+user);
-			cmd.push('-x '+password);
-			var hosts=setup.split('@')[1].split('/')[0];
-			var host=hosts.split(':')[0];
-			try {
-				var port=hosts.split(':')[1];
-			}catch(e) {
-				var port=3306
+		if (fs.existsSync(PROJECT_HOME+path.sep+"src"+path.sep+'Contents'+path.sep+'Db'+path.sep+mydb+'.scheme')) {
+			var texto=fs.readFileSync(PROJECT_HOME+path.sep+"src"+path.sep+'Contents'+path.sep+'Db'+path.sep+mydb+'.scheme','utf-8').split('}');
+			// Classes
+			var _IMPORT={};
+			var Sequelize=require('sequelize');
+			var sequelize = new Sequelize(setup);
+			for (var i=0;i<texto.length-1;i++) {
+				var maclasse=texto[i].split('{')[0].trim();
+				var madata=texto[i].split('{')[1];
+				if (madata) madata=madata.split('-'); else madata=[];
+				var COM=[];
+				var XCOM=[];
+				COM.push("module.exports = function(sequelize, DataTypes) {");	
+				COM.push("	return sequelize.define('"+maclasse+"', {");
+				var LINKS=[];
+				for (var j=0;j<madata.length;j++) {					
+					var mafield=madata[j].split('\r')[0].split('\n')[0].split('\t')[0].trim();
+					if (mafield) {
+						var matype=mafield.split(')')[0].split('(')[1];
+						mafield=mafield.split(')')[1];
+						mafield=mafield.replace(/\s/g,'');
+						var mytype=_SDATA(matype);
+						if (mytype) {
+							if (mafield!="") {
+								COM.push("		"+mafield+": {");
+								COM.push("			type: "+_SDATA(matype)+",");
+								COM.push("			allowNull: true");
+								COM.push("		},");
+							} 
+						} else {
+							XCOM.push("		"+mafield+"Id: {");
+							XCOM.push("			type: DataTypes.INTEGER(11),");
+							XCOM.push("			allowNull: false");
+							XCOM.push("		},");
+							LINKS.push({
+								from: maclasse,
+								as: mafield,
+								tb: matype
+							});
+						}
+					}
+				};
+				var ZCOM=COM;
+				ZCOM.push("	})");
+				ZCOM.push("};");
+				var dbdir=PROJECT_HOME+path.sep+"src"+path.sep+'Contents'+path.sep+'Db'+path.sep+mydb+'.db';
+				if (!fs.existsSync(dbdir)) fs.mkdirSync(dbdir);
+				fs.writeFileSync(dbdir+path.sep+maclasse+'.js',ZCOM.join('\n'));
+				_IMPORT[maclasse]=sequelize.import(dbdir+path.sep+maclasse+'.js');
+				
+				for (var k=0;k<LINKS.length;k++) {
+					_IMPORT[maclasse].belongsTo(_IMPORT[LINKS[k].tb],{as: LINKS[k].as});
+				};
+				console.log('		- Creating '+maclasse);
+				//_IMPORT[maclasse].sync({force: true}).then(function(){;
+				if (XCOM.length>0) {
+					COM.splice(-1,1);
+					COM.splice(-1,1);
+				};
+				for (var z=0;z<XCOM.length;z++) COM.push(XCOM[z]);
+				var ZCOM=COM;
+				ZCOM.push("	})");
+				ZCOM.push("};");
+				var dbdir=PROJECT_HOME+path.sep+"src"+path.sep+'Contents'+path.sep+'Db'+path.sep+mydb+'.db';
+				if (!fs.existsSync(dbdir)) fs.mkdirSync(dbdir);
+				if (XCOM.length>0) fs.writeFileSync(dbdir+path.sep+maclasse+'.js',ZCOM.join('\n'));						
+				sequelize.sync({force: true});
 			};
-			cmd.push('-h '+host);
-			cmd.push('-p '+port);
-			var db=setup.split('/')[1];
-			cmd.push('-d '+db);			
 		};
-		if (fs.existsSync(PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Db'+path.sep+mydb+'.scheme')) fs.mkdirSync(PROJECT_HOME+path.sep+'Contents'+path.sep+'Db'+path.sep+mydb+'.scheme');
-		console.log(cmd.join(' '));
-		shelljs.exec(cmd.join(' '));
+
 	};
 	
 };
@@ -2013,7 +2164,7 @@ function App_Update(nn,cb)
 				var idx=text.indexOf('module.exports');
 				if (idx>-1) text=text.substr(idx,text.length).split('=')[1].trim().split(';')[0];
 				if (!manifest.api) manifest.api={};
-				manifest.api.push(text);
+				if (text!="") manifest.api.push(text);
 			} catch(ex) {
 			
 			}
@@ -2527,6 +2678,12 @@ asciimo.write(" omneedia", "Colossal", function(art){
 		App_Model_Db();
 		return;
 	};
+
+	if (argv.indexOf('importdb')>-1)
+	{
+		App_Migration_Db();
+		return;
+	};
 	
 	if (argv.indexOf('clean')>-1)
 	{
@@ -2621,14 +2778,16 @@ asciimo.write(" omneedia", "Colossal", function(art){
 			return;
 		};
 		console.log('  - Publishing drone v'+p[p.length-1].split(require('path').sep)[0]);
-		scp.scp(PROJECT_HOME+path.sep+'builds'+path.sep+'production'+path.sep+p[p.length-1], {
-			host: ocfg.current["publish.host"],
-			username: 'omneedia',
-			password: ocfg.current["publish.password"],
-			path: '/omneedia/Cluster/var/packages'
-		}, function(err) {
-			if (err) console.log('  ! Publishing failed. Check your credentials',yellow); else console.log('  Done.');
-		})
+		if (ocfg.current["publish.port"]) var port=ocfg.current["publish.port"]; else var port=9191;
+		var req = Request.post("http://"+ocfg.current["publish.host"]+":"+ocfg.current["publish.port"]+"/upload", function (err, resp, body) {
+		  if (err) {
+			console.log('  ! Publishing failed. Check your config'.yellow);
+		  } else {
+			console.log('  Done.');
+		  }
+		});
+		var form = req.form();
+		form.append('file', fs.createReadStream(PROJECT_HOME+path.sep+'builds'+path.sep+'production'+path.sep+p[p.length-1]));
 		return;
 	};
 	
@@ -2694,11 +2853,15 @@ asciimo.write(" omneedia", "Colossal", function(art){
 			else
 			var x=require(PROJECT_WEB+path.sep+"Contents"+path.sep+"Services"+path.sep+api.action+".js");
 			x.using=function(unit) {
-
 				if (fs.existsSync(__dirname+path.sep+'node_modules'+path.sep+unit)) 
 				return require(__dirname+path.sep+'node_modules'+path.sep+unit);
-				else
-				return require(PROJECT_HOME+path.sep+'bin'+path.sep+'node_modules'+path.sep+unit);
+				else {
+					if (fs.existsSync(PROJECT_HOME+path.sep+'bin'+path.sep+'node_modules'+path.sep+unit)) 
+						return require(PROJECT_HOME+path.sep+'bin'+path.sep+'node_modules'+path.sep+unit);
+					else {
+						return require(PROJECT_WEB+path.sep+"Contents"+path.sep+"Services"+path.sep+unit.replace(/\//g,require('path').sep));
+					}
+				}
 			};
 			
 			var myfn=x[api.method].toString().split('function')[1].split('{')[0].trim().split('(')[1].split(')')[0].split(',');
@@ -3410,6 +3573,23 @@ asciimo.write(" omneedia", "Colossal", function(art){
 					};
 					res.end(JSON.stringify(o));
 				},
+				reader: function(filename,cb) {
+					if (!filename) cb("NOT_FOUND",null); else {
+						var path=__dirname+require('path').sep+'uploads'+require('path').sep+filename;
+						if (fs.existsSync(path)) {
+							fs.readFile(path,cb);
+						} else cb("NOT_FOUND",null);
+					};
+				},
+				getFileID: function(filename) {
+					function checksum (str) {
+						return require('crypto').createHash('md5').update(str, 'utf8').digest('hex');
+					};
+					return checksum(__dirname+require('path').sep+'uploads'+require('path').sep+filename);
+				},
+				getFilePath: function(filename) {
+					return __dirname+require('path').sep+'uploads'+require('path').sep+filename;
+				},
 				toBase64: function(filename) {					
 					if (!filename) return "";
 					var path=__dirname+require('path').sep+'uploads'+require('path').sep+filename;
@@ -3427,7 +3607,14 @@ asciimo.write(" omneedia", "Colossal", function(art){
 				if (fs.existsSync(__dirname+path.sep+'node_modules'+path.sep+unit)) 
 				return require(__dirname+path.sep+'node_modules'+path.sep+unit);
 				else
-				return require(PROJECT_HOME+path.sep+'bin'+path.sep+'node_modules'+path.sep+unit);
+				{
+					if (fs.existsSync(PROJECT_HOME+path.sep+'bin'+path.sep+'node_modules'+path.sep+unit)) 
+					return require(PROJECT_HOME+path.sep+'bin'+path.sep+'node_modules'+path.sep+unit);
+					else {
+						console.log(__dirname+path.sep+unit.replace(/\//g,require('path').sep));
+						return require(__dirname+path.sep+unit.replace(/\//g,require('path').sep));
+					}
+				}
 			};
 			_App.api = require(__dirname+path.sep+'node_modules'+path.sep+"api");
 			for (var i=0;i<Settings.API.length;i++) {
@@ -3500,15 +3687,49 @@ asciimo.write(" omneedia", "Colossal", function(art){
 				_App[Settings.API[i]].using=function(unit) {
 					if (fs.existsSync(__dirname+path.sep+'node_modules'+path.sep+unit)) 
 					return require(__dirname+path.sep+'node_modules'+path.sep+unit);
-					else
-					return require(PROJECT_HOME+path.sep+'bin'+path.sep+'node_modules'+path.sep+unit);
+					else {
+						if (fs.existsSync(PROJECT_HOME+path.sep+'bin'+path.sep+'node_modules'+path.sep+unit)) 
+						return require(PROJECT_HOME+path.sep+'bin'+path.sep+'node_modules'+path.sep+unit);
+						else {
+							console.log(__dirname+path.sep+unit.replace(/\//g,require('path').sep));
+							return require(__dirname+path.sep+unit.replace(/\//g,require('path').sep));
+						}
+					}
 									
 				};										
+								
 			};
 			_App.init(app,express);
 		};
 		
+			/*
+					
+			Add Task runner
+					
+			*/
+					
+			var __TTimer={};
+			if (Manifest.tasks) {
+				if (fs.existsSync(PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Tasks'+path.sep+"index.js")) { 
+					var _Task = require(PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Tasks'+path.sep+"index.js");
+					for (var i=0;i<Manifest.tasks.length;i++) _Task_execute(_Task,Manifest.tasks[i]);
+				};
+			};
+			
+			App.tasks={
+				add: function(cc,o)
+				{
+					var dd=PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Tasks'+path.sep+"jobs";
+					if (!fs.existsSync(dd)) fs.mkdirSync(dd);
+					dd=dd+path.sep+cc+".json";
+					if (fs.existsSync(dd)) dd=JSON.parse(fs.readFileSync(dd,'utf-8')); else dd=[];
+					dd.push(o);
+					fs.writeFileSync(PROJECT_HOME+path.sep+'src'+path.sep+'Contents'+path.sep+'Tasks'+path.sep+"jobs"+path.sep+cc+".json",JSON.stringify(dd,null,4));
+				}
+			};
+			
 			app.listen(Manifest.server.port);
+			
 			if (Manifest.platform=="mobile") {
 				console.log('  - Debug service started at http://'+getIPAddress()+':'+Manifest.debug.port+'/client');
 				Exec(__dirname+path.sep+"node_modules"+path.sep+".bin"+path.sep+"weinre --httpPort "+Manifest.debug.port+" --boundHost -all-",function(){});
@@ -3535,13 +3756,16 @@ asciimo.write(" omneedia", "Colossal", function(art){
 					if (realpath.indexOf('bin')>-1) return true;
 					if (realpath.indexOf('dev')>-1) return true;
 					if (realpath.indexOf('builds')>-1) return true;
+					if (realpath.indexOf('Tasks')>-1) return true;
 				}
 			};
 			fsmonitor.watch(PROJECT_HOME, prefs , function(change) {
-				console.log("!! Change detected... reload".yellow);  
+				console.log("");
+				console.log("	!!!! Change detected... reload".yellow);  
+				console.log("");
 				process.kill(process.pid);							
 			});
-				
+			
 		});
 				
 	}

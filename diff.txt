@@ -1,0 +1,1467 @@
+12,17c12,70
+< 
+< --
+< -- Not dumping tablespaces as no INFORMATION_SCHEMA.FILES table on this server
+< --
+< DROP TABLE IF EXISTS `_bpcandroid`;
+< /*!50001 DROP VIEW IF EXISTS `_bpcandroid`*/;
+---
+> DROP TABLE IF EXISTS `AGENTS`;
+> /*!40101 SET @saved_cs_client     = @@character_set_client */;
+> /*!40101 SET character_set_client = utf8 */;
+> CREATE TABLE `AGENTS` (
+>   `ID_MATRICULE` int(11) NOT NULL,
+>   `NOM_AGENT` int(11) NOT NULL,
+>   `PRENOM_AGENT` int(11) NOT NULL,
+>   PRIMARY KEY (`ID_MATRICULE`)
+> ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+> /*!40101 SET character_set_client = @saved_cs_client */;
+> DROP TABLE IF EXISTS `DOMAINES`;
+> /*!40101 SET @saved_cs_client     = @@character_set_client */;
+> /*!40101 SET character_set_client = utf8 */;
+> CREATE TABLE `DOMAINES` (
+>   `ID_DOMAINE` decimal(3,0) NOT NULL,
+>   `NOM_DOMAINE` int(11) NOT NULL,
+>   PRIMARY KEY (`ID_DOMAINE`)
+> ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+> /*!40101 SET character_set_client = @saved_cs_client */;
+> DROP TABLE IF EXISTS `SOUS_DOMAINES`;
+> /*!40101 SET @saved_cs_client     = @@character_set_client */;
+> /*!40101 SET character_set_client = utf8 */;
+> CREATE TABLE `SOUS_DOMAINES` (
+>   `ID_SOUS_DOMAINES` decimal(3,0) NOT NULL,
+>   `ID_DOMAINE` decimal(3,0) NOT NULL,
+>   `NOM_SOUS_DOMAINES` int(11) NOT NULL,
+>   PRIMARY KEY (`ID_SOUS_DOMAINES`),
+>   KEY `FK_APPARTENIR` (`ID_DOMAINE`),
+>   CONSTRAINT `FK_APPARTENIR` FOREIGN KEY (`ID_DOMAINE`) REFERENCES `DOMAINES` (`ID_DOMAINE`)
+> ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+> /*!40101 SET character_set_client = @saved_cs_client */;
+> DROP TABLE IF EXISTS `TRAVAILLE`;
+> /*!40101 SET @saved_cs_client     = @@character_set_client */;
+> /*!40101 SET character_set_client = utf8 */;
+> CREATE TABLE `TRAVAILLE` (
+>   `ID_SOUS_DOMAINES` decimal(3,0) NOT NULL,
+>   `ID_MATRICULE` int(11) NOT NULL,
+>   PRIMARY KEY (`ID_SOUS_DOMAINES`,`ID_MATRICULE`),
+>   KEY `FK_TRAVAILLE2` (`ID_MATRICULE`),
+>   CONSTRAINT `FK_TRAVAILLE` FOREIGN KEY (`ID_SOUS_DOMAINES`) REFERENCES `SOUS_DOMAINES` (`ID_SOUS_DOMAINES`),
+>   CONSTRAINT `FK_TRAVAILLE2` FOREIGN KEY (`ID_MATRICULE`) REFERENCES `AGENTS` (`ID_MATRICULE`)
+> ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+> /*!40101 SET character_set_client = @saved_cs_client */;
+> DROP TABLE IF EXISTS `VISIOM`;
+> /*!40101 SET @saved_cs_client     = @@character_set_client */;
+> /*!40101 SET character_set_client = utf8 */;
+> CREATE TABLE `VISIOM` (
+>   `kage` int(11) NOT NULL,
+>   `LIBELLE_POSTE` varchar(73) DEFAULT NULL,
+>   `FAMILLE_PROF` varchar(46) DEFAULT NULL,
+>   `EMPLOI_TYPE` varchar(64) DEFAULT NULL,
+>   `REHUCIT` varchar(23) DEFAULT NULL,
+>   `NOM` varchar(16) DEFAULT NULL,
+>   `PRENOM` varchar(15) DEFAULT NULL,
+>   `DATE_NAISSANCE` varchar(23) DEFAULT NULL
+> ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+> /*!40101 SET character_set_client = @saved_cs_client */;
+> DROP TABLE IF EXISTS `_BpcAndroid`;
+> /*!50001 DROP VIEW IF EXISTS `_BpcAndroid`*/;
+20c73
+< /*!50001 CREATE VIEW `_bpcandroid` AS SELECT 
+---
+> /*!50001 CREATE VIEW `_BpcAndroid` AS SELECT 
+32,34c85,87
+<   `Kacc` int(11) NOT NULL auto_increment,
+<   `LibSAcc` varchar(250) default NULL,
+<   `LibAcc` varchar(250) default NULL,
+---
+>   `Kacc` int(11) NOT NULL AUTO_INCREMENT,
+>   `LibSAcc` varchar(250) DEFAULT NULL,
+>   `LibAcc` varchar(250) DEFAULT NULL,
+36c89
+<   PRIMARY KEY  (`Kacc`)
+---
+>   PRIMARY KEY (`Kacc`)
+45,46c98,99
+<   `cid` int(11) NOT NULL auto_increment,
+<   PRIMARY KEY  (`cid`)
+---
+>   `cid` int(11) NOT NULL AUTO_INCREMENT,
+>   PRIMARY KEY (`cid`)
+53c106
+<   `Kact` int(11) NOT NULL auto_increment,
+---
+>   `Kact` int(11) NOT NULL AUTO_INCREMENT,
+56c109
+<   `LibAct` varchar(250) default NULL,
+---
+>   `LibAct` varchar(250) DEFAULT NULL,
+59c112
+<   PRIMARY KEY  (`Kact`)
+---
+>   PRIMARY KEY (`Kact`)
+66,69c119,122
+<   `Kadr` int(11) NOT NULL auto_increment,
+<   `Kpos` int(11) default NULL,
+<   `Kdep` int(11) default NULL,
+<   `Kpay` int(11) default NULL,
+---
+>   `Kadr` int(11) NOT NULL AUTO_INCREMENT,
+>   `Kpos` int(11) DEFAULT NULL,
+>   `Kdep` int(11) DEFAULT NULL,
+>   `Kpay` int(11) DEFAULT NULL,
+71,76c124,129
+<   `Perso` tinyint(4) default NULL,
+<   `Type` int(11) default NULL,
+<   `Verrou` varchar(50) default NULL,
+<   `Date_derniere_modif` datetime default NULL,
+<   PRIMARY KEY  (`Kadr`)
+< ) ENGINE=MyISAM AUTO_INCREMENT=2291 DEFAULT CHARSET=latin1;
+---
+>   `Perso` tinyint(4) DEFAULT NULL,
+>   `Type` int(11) DEFAULT NULL,
+>   `Verrou` varchar(50) DEFAULT NULL,
+>   `Date_derniere_modif` datetime DEFAULT NULL,
+>   PRIMARY KEY (`Kadr`)
+> ) ENGINE=MyISAM AUTO_INCREMENT=2344 DEFAULT CHARSET=latin1;
+82c135
+<   `Kaat` int(11) NOT NULL auto_increment,
+---
+>   `Kaat` int(11) NOT NULL AUTO_INCREMENT,
+85,88c138,141
+<   `DatAutV` datetime default NULL,
+<   `DatDebV` datetime default NULL,
+<   `DatFinV` datetime default NULL,
+<   `NumAut` varchar(50) default NULL,
+---
+>   `DatAutV` datetime DEFAULT NULL,
+>   `DatDebV` datetime DEFAULT NULL,
+>   `DatFinV` datetime DEFAULT NULL,
+>   `NumAut` varchar(50) DEFAULT NULL,
+90c143
+<   PRIMARY KEY  (`Kaat`)
+---
+>   PRIMARY KEY (`Kaat`)
+97c150
+<   `Kaap` int(11) NOT NULL auto_increment,
+---
+>   `Kaap` int(11) NOT NULL AUTO_INCREMENT,
+99,101c152,154
+<   `Kvmk` int(11) default NULL,
+<   `Kvmd` int(11) default NULL,
+<   `Kvas` int(11) default NULL,
+---
+>   `Kvmk` int(11) DEFAULT NULL,
+>   `Kvmd` int(11) DEFAULT NULL,
+>   `Kvas` int(11) DEFAULT NULL,
+103c156
+<   `DatAut` datetime default NULL,
+---
+>   `DatAut` datetime DEFAULT NULL,
+105,111c158,164
+<   `Immat` varchar(255) default NULL,
+<   `NumPol` varchar(255) default NULL,
+<   `Zone` int(11) default NULL,
+<   `KmAut` double default NULL,
+<   `KmAdd` double default NULL,
+<   `DatDeb` datetime default NULL,
+<   `DatFin` datetime default NULL,
+---
+>   `Immat` varchar(255) DEFAULT NULL,
+>   `NumPol` varchar(255) DEFAULT NULL,
+>   `Zone` int(11) DEFAULT NULL,
+>   `KmAut` double DEFAULT NULL,
+>   `KmAdd` double DEFAULT NULL,
+>   `DatDeb` datetime DEFAULT NULL,
+>   `DatFin` datetime DEFAULT NULL,
+113c166
+<   PRIMARY KEY  (`Kaap`)
+---
+>   PRIMARY KEY (`Kaap`)
+120c173
+<   `Kcod` int(11) NOT NULL auto_increment,
+---
+>   `Kcod` int(11) NOT NULL AUTO_INCREMENT,
+122,123c175,176
+<   `CodConf` varchar(4) default NULL,
+<   `CodChauf` varchar(4) default NULL,
+---
+>   `CodConf` varchar(4) DEFAULT NULL,
+>   `CodChauf` varchar(4) DEFAULT NULL,
+125c178
+<   PRIMARY KEY  (`Kcod`)
+---
+>   PRIMARY KEY (`Kcod`)
+132c185
+<   `Keta` int(11) NOT NULL auto_increment,
+---
+>   `Keta` int(11) NOT NULL AUTO_INCREMENT,
+136,150c189,203
+<   `Kuninew` int(11) default NULL,
+<   `Ksubnew` int(11) default NULL,
+<   `Ksernew` int(11) default NULL,
+<   `Ketsex` int(11) default NULL,
+<   `Kuniex` int(11) default NULL,
+<   `Ksubex` int(11) default NULL,
+<   `Kserex` int(11) default NULL,
+<   `DatCre` datetime default NULL,
+<   `Arrivee` varchar(250) default NULL,
+<   `Motif` text,
+<   `DatEta` datetime default NULL,
+<   `DatCPA` date default NULL,
+<   `DatCFA` datetime default NULL,
+<   `DatRet` datetime default NULL,
+<   `PosFutur` int(11) default NULL,
+---
+>   `Kuninew` int(11) DEFAULT NULL,
+>   `Ksubnew` int(11) DEFAULT NULL,
+>   `Ksernew` int(11) DEFAULT NULL,
+>   `Ketsex` int(11) DEFAULT NULL,
+>   `Kuniex` int(11) DEFAULT NULL,
+>   `Ksubex` int(11) DEFAULT NULL,
+>   `Kserex` int(11) DEFAULT NULL,
+>   `DatCre` datetime DEFAULT NULL,
+>   `Arrivee` varchar(250) DEFAULT NULL,
+>   `Motif` varchar(250) DEFAULT NULL,
+>   `DatEta` datetime DEFAULT NULL,
+>   `DatCPA` date DEFAULT NULL,
+>   `DatCFA` datetime DEFAULT NULL,
+>   `DatRet` datetime DEFAULT NULL,
+>   `PosFutur` int(11) DEFAULT NULL,
+152,153c205,206
+<   PRIMARY KEY  (`Keta`)
+< ) ENGINE=MyISAM AUTO_INCREMENT=7893 DEFAULT CHARSET=latin1;
+---
+>   PRIMARY KEY (`Keta`)
+> ) ENGINE=MyISAM AUTO_INCREMENT=7984 DEFAULT CHARSET=latin1;
+159,171c212,222
+<   `Kage` int(11) NOT NULL auto_increment,
+<   `Kuni` int(11) default NULL,
+<   `Ksub` int(11) default NULL,
+<   `Kser` int(11) default NULL,
+<   `Kbat` int(11) default NULL,
+<   `Kgra` int(11) default NULL,
+<   `Kbur` int(11) default NULL,
+<   `Kres` int(11) default NULL,
+<   `Ksec` int(11) default NULL,
+<   `Ksec2` int(11) default NULL,
+<   `Keta` int(11) default NULL,
+<   `Nom` varchar(250) default NULL,
+<   `Prenom` varchar(250) default NULL,
+---
+>   `Kage` int(11) NOT NULL AUTO_INCREMENT,
+>   `Kuni` int(11) DEFAULT NULL,
+>   `Ksub` int(11) DEFAULT NULL,
+>   `Kser` int(11) DEFAULT NULL,
+>   `Kbat` int(11) DEFAULT NULL,
+>   `Kgra` int(11) DEFAULT NULL,
+>   `Kbur` int(11) DEFAULT NULL,
+>   `Kres` int(11) DEFAULT NULL,
+>   `Ksec` int(11) DEFAULT NULL,
+>   `Nom` varchar(250) DEFAULT NULL,
+>   `Prenom` varchar(250) DEFAULT NULL,
+173,185c224,236
+<   `DatCre` datetime default NULL,
+<   `DatOuv` datetime default NULL,
+<   `DatMod` datetime default NULL,
+<   `DatClo` datetime default NULL,
+<   `HorSect` varchar(10) default NULL,
+<   `CodHie` smallint(6) default NULL,
+<   `CodHor` varchar(6) default NULL,
+<   `LibHor` varchar(100) default NULL,
+<   `Telephone` varchar(20) default NULL,
+<   `Poste` varchar(10) default NULL,
+<   `Fax` varchar(20) default NULL,
+<   `Portable` varchar(20) default NULL,
+<   `Bureau` varchar(20) default NULL,
+---
+>   `DatCre` datetime DEFAULT NULL,
+>   `DatOuv` datetime DEFAULT NULL,
+>   `DatMod` datetime DEFAULT NULL,
+>   `DatClo` datetime DEFAULT NULL,
+>   `HorSect` varchar(10) DEFAULT NULL,
+>   `CodHie` smallint(6) DEFAULT NULL,
+>   `CodHor` varchar(6) DEFAULT NULL,
+>   `LibHor` varchar(100) DEFAULT NULL,
+>   `Telephone` varchar(20) DEFAULT NULL,
+>   `Poste` varchar(10) DEFAULT NULL,
+>   `Fax` varchar(20) DEFAULT NULL,
+>   `Portable` varchar(20) DEFAULT NULL,
+>   `Bureau` varchar(20) DEFAULT NULL,
+187,191c238,242
+<   `DatMaj` datetime default NULL,
+<   `DatNai` datetime default NULL,
+<   `VilNai` varchar(250) default NULL,
+<   `DepNai` varchar(5) default NULL,
+<   `NomPre` varchar(30) default NULL,
+---
+>   `DatMaj` datetime DEFAULT NULL,
+>   `DatNai` datetime DEFAULT NULL,
+>   `VilNai` varchar(250) DEFAULT NULL,
+>   `DepNai` varchar(5) DEFAULT NULL,
+>   `NomPre` varchar(30) DEFAULT NULL,
+193,194c244,245
+<   `IneTP` smallint(6) default NULL,
+<   `HSLabo` smallint(6) default NULL,
+---
+>   `IneTP` smallint(6) DEFAULT NULL,
+>   `HSLabo` smallint(6) DEFAULT NULL,
+196,198c247,249
+<   `LogUse` varchar(100) default NULL,
+<   `NumImmo` varchar(50) default NULL,
+<   `INSEE` varchar(16) default NULL,
+---
+>   `LogUse` varchar(100) DEFAULT NULL,
+>   `NumImmo` varchar(50) DEFAULT NULL,
+>   `INSEE` varchar(16) DEFAULT NULL,
+200c251
+<   `PaysNai` varchar(250) default NULL,
+---
+>   `PaysNai` varchar(250) DEFAULT NULL,
+203,210c254,262
+<   `Verrou` varchar(50) default NULL,
+<   `NumautCond` int(11) default NULL,
+<   `Autorise` int(11) default NULL,
+<   `INM` char(5) default NULL,
+<   `AgGesper` varchar(12) default NULL,
+<   `AgRe` varchar(20) default NULL,
+<   `AgRisques` int(11) default NULL,
+<   `REHUCIT` varchar(255) default NULL,
+---
+>   `Verrou` varchar(50) DEFAULT NULL,
+>   `NumautCond` int(11) DEFAULT NULL,
+>   `Autorise` int(11) DEFAULT NULL,
+>   `INM` char(5) DEFAULT NULL,
+>   `AgGesper` varchar(12) DEFAULT NULL,
+>   `AgRe` varchar(20) DEFAULT NULL,
+>   `AgRisques` int(11) DEFAULT NULL,
+>   `Ksec2` int(11) DEFAULT NULL,
+>   `REHUCIT` varchar(255) DEFAULT NULL,
+212,213c264,265
+<   `dossier_d` int(11) default NULL,
+<   `dossier_r` int(11) default NULL,
+---
+>   `dossier_d` int(11) DEFAULT NULL,
+>   `dossier_r` int(11) DEFAULT NULL,
+215,216c267,268
+<   PRIMARY KEY  (`Kage`)
+< ) ENGINE=MyISAM AUTO_INCREMENT=2607 DEFAULT CHARSET=latin1;
+---
+>   PRIMARY KEY (`Kage`)
+> ) ENGINE=MyISAM AUTO_INCREMENT=2658 DEFAULT CHARSET=latin1;
+223,226c275,278
+<   `Kpos` int(11) default NULL,
+<   `Kres` int(11) default NULL,
+<   `Nom` varchar(250) default NULL,
+<   `Prenom` varchar(250) default NULL,
+---
+>   `Kpos` int(11) DEFAULT NULL,
+>   `Kres` int(11) DEFAULT NULL,
+>   `Nom` varchar(250) DEFAULT NULL,
+>   `Prenom` varchar(250) DEFAULT NULL,
+236,240c288,292
+<   `Kape` int(11) NOT NULL auto_increment,
+<   `Kcpe` int(11) default NULL,
+<   `Kage` int(11) default NULL,
+<   `NumPerm` varchar(255) default NULL,
+<   `DatObt` datetime default NULL,
+---
+>   `Kape` int(11) NOT NULL AUTO_INCREMENT,
+>   `Kcpe` int(11) DEFAULT NULL,
+>   `Kage` int(11) DEFAULT NULL,
+>   `NumPerm` varchar(255) DEFAULT NULL,
+>   `DatObt` datetime DEFAULT NULL,
+242c294
+<   PRIMARY KEY  (`Kape`)
+---
+>   PRIMARY KEY (`Kape`)
+249,250c301,302
+<   `Kpie` int(11) NOT NULL auto_increment,
+<   `Kcpe` int(11) default NULL,
+---
+>   `Kpie` int(11) NOT NULL AUTO_INCREMENT,
+>   `Kcpe` int(11) DEFAULT NULL,
+253,256c305,308
+<   `NumPie` varchar(255) default NULL,
+<   `DatPie` datetime default NULL,
+<   `DatVal` datetime default NULL,
+<   `SignPie` varchar(255) default NULL,
+---
+>   `NumPie` varchar(255) DEFAULT NULL,
+>   `DatPie` datetime DEFAULT NULL,
+>   `DatVal` datetime DEFAULT NULL,
+>   `SignPie` varchar(255) DEFAULT NULL,
+258,259c310,311
+<   PRIMARY KEY  (`Kpie`)
+< ) ENGINE=MyISAM AUTO_INCREMENT=2796 DEFAULT CHARSET=latin1;
+---
+>   PRIMARY KEY (`Kpie`)
+> ) ENGINE=MyISAM AUTO_INCREMENT=2827 DEFAULT CHARSET=latin1;
+265c317
+<   `Kagr` int(11) NOT NULL auto_increment,
+---
+>   `Kagr` int(11) NOT NULL AUTO_INCREMENT,
+268c320
+<   `Priorite` int(11) default NULL,
+---
+>   `Priorite` int(11) DEFAULT NULL,
+270,271c322,323
+<   PRIMARY KEY  (`Kagr`)
+< ) ENGINE=MyISAM AUTO_INCREMENT=5218 DEFAULT CHARSET=latin1;
+---
+>   PRIMARY KEY (`Kagr`)
+> ) ENGINE=MyISAM AUTO_INCREMENT=5206 DEFAULT CHARSET=latin1;
+277,280c329,332
+<   `Kann` int(11) NOT NULL auto_increment,
+<   `Krol` int(11) default NULL,
+<   `LibAnnc` varchar(50) default NULL,
+<   `LibAnn` varchar(200) default NULL,
+---
+>   `Kann` int(11) NOT NULL AUTO_INCREMENT,
+>   `Krol` int(11) DEFAULT NULL,
+>   `LibAnnc` varchar(50) DEFAULT NULL,
+>   `LibAnn` varchar(200) DEFAULT NULL,
+283c335
+<   PRIMARY KEY  (`Kann`)
+---
+>   PRIMARY KEY (`Kann`)
+291,300c343,352
+<   `Kuni` int(11) default NULL,
+<   `Ksub` int(11) default NULL,
+<   `Kser` int(11) default NULL,
+<   `Kbat` int(11) default NULL,
+<   `Kgra` int(11) default NULL,
+<   `Kbur` int(11) default NULL,
+<   `Kres` int(11) default NULL,
+<   `Ksec` int(11) default NULL,
+<   `Nom` varchar(250) default NULL,
+<   `Prenom` varchar(250) default NULL,
+---
+>   `Kuni` int(11) DEFAULT NULL,
+>   `Ksub` int(11) DEFAULT NULL,
+>   `Kser` int(11) DEFAULT NULL,
+>   `Kbat` int(11) DEFAULT NULL,
+>   `Kgra` int(11) DEFAULT NULL,
+>   `Kbur` int(11) DEFAULT NULL,
+>   `Kres` int(11) DEFAULT NULL,
+>   `Ksec` int(11) DEFAULT NULL,
+>   `Nom` varchar(250) DEFAULT NULL,
+>   `Prenom` varchar(250) DEFAULT NULL,
+302,314c354,366
+<   `DatCre` datetime default NULL,
+<   `DatOuv` datetime default NULL,
+<   `DatMod` datetime default NULL,
+<   `DatClo` datetime default NULL,
+<   `HorSect` varchar(10) default NULL,
+<   `CodHie` smallint(6) default NULL,
+<   `CodHor` varchar(6) default NULL,
+<   `LibHor` varchar(100) default NULL,
+<   `Telephone` varchar(20) default NULL,
+<   `Poste` varchar(10) default NULL,
+<   `Fax` varchar(20) default NULL,
+<   `Portable` varchar(20) default NULL,
+<   `Bureau` varchar(20) default NULL,
+---
+>   `DatCre` datetime DEFAULT NULL,
+>   `DatOuv` datetime DEFAULT NULL,
+>   `DatMod` datetime DEFAULT NULL,
+>   `DatClo` datetime DEFAULT NULL,
+>   `HorSect` varchar(10) DEFAULT NULL,
+>   `CodHie` smallint(6) DEFAULT NULL,
+>   `CodHor` varchar(6) DEFAULT NULL,
+>   `LibHor` varchar(100) DEFAULT NULL,
+>   `Telephone` varchar(20) DEFAULT NULL,
+>   `Poste` varchar(10) DEFAULT NULL,
+>   `Fax` varchar(20) DEFAULT NULL,
+>   `Portable` varchar(20) DEFAULT NULL,
+>   `Bureau` varchar(20) DEFAULT NULL,
+316,320c368,372
+<   `DatMaj` datetime default NULL,
+<   `DatNai` datetime default NULL,
+<   `VilNai` varchar(250) default NULL,
+<   `DepNai` varchar(5) default NULL,
+<   `NomPre` varchar(30) default NULL,
+---
+>   `DatMaj` datetime DEFAULT NULL,
+>   `DatNai` datetime DEFAULT NULL,
+>   `VilNai` varchar(250) DEFAULT NULL,
+>   `DepNai` varchar(5) DEFAULT NULL,
+>   `NomPre` varchar(30) DEFAULT NULL,
+322,323c374,375
+<   `IneTP` smallint(6) default NULL,
+<   `HSLabo` smallint(6) default NULL,
+---
+>   `IneTP` smallint(6) DEFAULT NULL,
+>   `HSLabo` smallint(6) DEFAULT NULL,
+325,327c377,379
+<   `LogUse` varchar(100) default NULL,
+<   `NumImmo` varchar(50) default NULL,
+<   `INSEE` varchar(16) default NULL,
+---
+>   `LogUse` varchar(100) DEFAULT NULL,
+>   `NumImmo` varchar(50) DEFAULT NULL,
+>   `INSEE` varchar(16) DEFAULT NULL,
+329c381
+<   `PaysNai` varchar(250) default NULL,
+---
+>   `PaysNai` varchar(250) DEFAULT NULL,
+333,339c385,391
+<   `NumautCond` int(11) default NULL,
+<   `Autorise` int(11) default NULL,
+<   `INM` char(5) default NULL,
+<   `AgGesper` varchar(12) default NULL,
+<   `AgRe` varchar(20) default NULL,
+<   `AgRisques` int(11) default NULL,
+<   `Ksec2` int(11) default NULL
+---
+>   `NumautCond` int(11) DEFAULT NULL,
+>   `Autorise` int(11) DEFAULT NULL,
+>   `INM` char(5) DEFAULT NULL,
+>   `AgGesper` varchar(12) DEFAULT NULL,
+>   `AgRe` varchar(20) DEFAULT NULL,
+>   `AgRisques` int(11) DEFAULT NULL,
+>   `Ksec2` int(11) DEFAULT NULL
+346,348c398,400
+<   `Kbat` int(11) NOT NULL auto_increment,
+<   `LibBatC` varchar(50) default NULL,
+<   `LibBat` varchar(250) default NULL,
+---
+>   `Kbat` int(11) NOT NULL AUTO_INCREMENT,
+>   `LibBatC` varchar(50) DEFAULT NULL,
+>   `LibBat` varchar(250) DEFAULT NULL,
+351c403
+<   PRIMARY KEY  (`Kbat`)
+---
+>   PRIMARY KEY (`Kbat`)
+358,359c410,411
+<   `Kcgr` int(11) NOT NULL auto_increment,
+<   `LibCgr` varchar(150) default NULL,
+---
+>   `Kcgr` int(11) NOT NULL AUTO_INCREMENT,
+>   `LibCgr` varchar(150) DEFAULT NULL,
+361c413
+<   PRIMARY KEY  (`Kcgr`)
+---
+>   PRIMARY KEY (`Kcgr`)
+368,369c420,421
+<   `Kcpe` int(11) NOT NULL auto_increment,
+<   `CatPerm` char(10) default NULL,
+---
+>   `Kcpe` int(11) NOT NULL AUTO_INCREMENT,
+>   `CatPerm` char(10) DEFAULT NULL,
+372c424
+<   PRIMARY KEY  (`Kcpe`)
+---
+>   PRIMARY KEY (`Kcpe`)
+379,381c431,433
+<   `Kcpi` int(11) NOT NULL auto_increment,
+<   `TypPiece` int(11) default NULL,
+<   `CatPiece` varchar(150) default NULL,
+---
+>   `Kcpi` int(11) NOT NULL AUTO_INCREMENT,
+>   `TypPiece` int(11) DEFAULT NULL,
+>   `CatPiece` varchar(150) DEFAULT NULL,
+383c435
+<   PRIMARY KEY  (`Kcpi`)
+---
+>   PRIMARY KEY (`Kcpi`)
+390c442
+<   `Kcon` int(11) NOT NULL auto_increment,
+---
+>   `Kcon` int(11) NOT NULL AUTO_INCREMENT,
+392,399c444,451
+<   `Nom` varchar(100) default NULL,
+<   `Prenom` varchar(100) default NULL,
+<   `Mel` varchar(250) default NULL,
+<   `Telephone` varchar(20) default NULL,
+<   `Portable` varchar(20) default NULL,
+<   `Fax` varchar(20) default NULL,
+<   `Fonction` varchar(100) default NULL,
+<   `DatMaj` datetime default NULL,
+---
+>   `Nom` varchar(100) DEFAULT NULL,
+>   `Prenom` varchar(100) DEFAULT NULL,
+>   `Mel` varchar(250) DEFAULT NULL,
+>   `Telephone` varchar(20) DEFAULT NULL,
+>   `Portable` varchar(20) DEFAULT NULL,
+>   `Fax` varchar(20) DEFAULT NULL,
+>   `Fonction` varchar(100) DEFAULT NULL,
+>   `DatMaj` datetime DEFAULT NULL,
+401c453
+<   PRIMARY KEY  (`Kcon`)
+---
+>   PRIMARY KEY (`Kcon`)
+408,418c460,470
+<   `PID` int(11) NOT NULL auto_increment,
+<   `Agent` int(11) default NULL,
+<   `Interim` int(11) default NULL,
+<   `Final` int(11) default NULL,
+<   `D0` datetime default NULL,
+<   `D1` datetime default NULL,
+<   `VISA1` int(11) default NULL,
+<   `VISA2` int(11) default NULL,
+<   `VALID` int(11) default NULL,
+<   `UID` varchar(50) default NULL,
+<   PRIMARY KEY  (`PID`)
+---
+>   `PID` int(11) NOT NULL AUTO_INCREMENT,
+>   `Agent` int(11) DEFAULT NULL,
+>   `Interim` int(11) DEFAULT NULL,
+>   `Final` int(11) DEFAULT NULL,
+>   `D0` datetime DEFAULT NULL,
+>   `D1` datetime DEFAULT NULL,
+>   `VISA1` int(11) DEFAULT NULL,
+>   `VISA2` int(11) DEFAULT NULL,
+>   `VALID` int(11) DEFAULT NULL,
+>   `UID` varchar(50) DEFAULT NULL,
+>   PRIMARY KEY (`PID`)
+425,432c477,484
+<   `Kdes` int(11) NOT NULL auto_increment,
+<   `name` varchar(100) default NULL,
+<   `haut` int(11) default NULL,
+<   `gauche` int(11) default NULL,
+<   `largeur` int(11) default NULL,
+<   `hauteur` int(11) default NULL,
+<   `panel` varchar(100) default NULL,
+<   `caption` varchar(100) default NULL,
+---
+>   `Kdes` int(11) NOT NULL AUTO_INCREMENT,
+>   `name` varchar(100) DEFAULT NULL,
+>   `haut` int(11) DEFAULT NULL,
+>   `gauche` int(11) DEFAULT NULL,
+>   `largeur` int(11) DEFAULT NULL,
+>   `hauteur` int(11) DEFAULT NULL,
+>   `panel` varchar(100) DEFAULT NULL,
+>   `caption` varchar(100) DEFAULT NULL,
+434,435c486,487
+<   `indice` int(11) default NULL,
+<   PRIMARY KEY  (`Kdes`)
+---
+>   `indice` int(11) DEFAULT NULL,
+>   PRIMARY KEY (`Kdes`)
+438,446d489
+< DROP TABLE IF EXISTS `domaines`;
+< /*!40101 SET @saved_cs_client     = @@character_set_client */;
+< /*!40101 SET character_set_client = utf8 */;
+< CREATE TABLE `domaines` (
+<   `ID_DOMAINE` decimal(3,0) NOT NULL,
+<   `NOM_DOMAINE` int(11) NOT NULL,
+<   PRIMARY KEY  (`ID_DOMAINE`)
+< ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+< /*!40101 SET character_set_client = @saved_cs_client */;
+451,455c494,498
+<   `KConsult` int(11) NOT NULL auto_increment,
+<   `CodeConsult` int(11) default NULL,
+<   `LibConsultC` char(50) default NULL,
+<   `LibConsult` char(50) default NULL,
+<   PRIMARY KEY  (`KConsult`)
+---
+>   `KConsult` int(11) NOT NULL AUTO_INCREMENT,
+>   `CodeConsult` int(11) DEFAULT NULL,
+>   `LibConsultC` char(50) DEFAULT NULL,
+>   `LibConsult` char(50) DEFAULT NULL,
+>   PRIMARY KEY (`KConsult`)
+462,467c505,510
+<   `Kets` int(11) NOT NULL auto_increment,
+<   `Kadr` int(11) default NULL,
+<   `LibEts` text character set latin1,
+<   `LibEtsC` varchar(50) character set latin1 default NULL,
+<   `Obs` longtext character set latin1,
+<   `etsGESPER` varchar(50) character set latin1 default NULL,
+---
+>   `Kets` int(11) NOT NULL AUTO_INCREMENT,
+>   `Kadr` int(11) DEFAULT NULL,
+>   `LibEts` text CHARACTER SET latin1,
+>   `LibEtsC` varchar(50) CHARACTER SET latin1 DEFAULT NULL,
+>   `Obs` longtext CHARACTER SET latin1,
+>   `etsGESPER` varchar(50) CHARACTER SET latin1 DEFAULT NULL,
+469c512
+<   PRIMARY KEY  (`Kets`)
+---
+>   PRIMARY KEY (`Kets`)
+476,477c519,520
+<   `Kfam` int(11) NOT NULL auto_increment,
+<   `LibFam` varchar(100) default NULL,
+---
+>   `Kfam` int(11) NOT NULL AUTO_INCREMENT,
+>   `LibFam` varchar(100) DEFAULT NULL,
+479c522
+<   PRIMARY KEY  (`Kfam`)
+---
+>   PRIMARY KEY (`Kfam`)
+486,488c529,531
+<   `Kfer` int(11) NOT NULL auto_increment,
+<   `DateFerie` datetime default NULL,
+<   `LibFerie` varchar(100) default NULL,
+---
+>   `Kfer` int(11) NOT NULL AUTO_INCREMENT,
+>   `DateFerie` datetime DEFAULT NULL,
+>   `LibFerie` varchar(100) DEFAULT NULL,
+491c534
+<   PRIMARY KEY  (`Kfer`)
+---
+>   PRIMARY KEY (`Kfer`)
+498,502c541,545
+<   `Kdts` int(11) NOT NULL auto_increment,
+<   `Kage` int(11) default NULL,
+<   `DtValid` int(11) default NULL,
+<   `DtConsultation` int(11) default NULL,
+<   PRIMARY KEY  (`Kdts`)
+---
+>   `Kdts` int(11) NOT NULL AUTO_INCREMENT,
+>   `Kage` int(11) DEFAULT NULL,
+>   `DtValid` int(11) DEFAULT NULL,
+>   `DtConsultation` int(11) DEFAULT NULL,
+>   PRIMARY KEY (`Kdts`)
+509c552
+<   `Kgra` int(11) NOT NULL auto_increment,
+---
+>   `Kgra` int(11) NOT NULL AUTO_INCREMENT,
+511,516c554,559
+<   `LibGrac` varchar(50) default NULL,
+<   `LibGra` varchar(250) default NULL,
+<   `Gesper` varchar(20) default NULL,
+<   `Statut` varchar(100) default NULL,
+<   `CatFP` varchar(50) default NULL,
+<   `TechAdm` varchar(100) default NULL,
+---
+>   `LibGrac` varchar(50) DEFAULT NULL,
+>   `LibGra` varchar(250) DEFAULT NULL,
+>   `Gesper` varchar(20) DEFAULT NULL,
+>   `Statut` varchar(100) DEFAULT NULL,
+>   `CatFP` varchar(50) DEFAULT NULL,
+>   `TechAdm` varchar(100) DEFAULT NULL,
+518,519c561,562
+<   `Verrou` int(11) default NULL,
+<   PRIMARY KEY  (`Kgra`)
+---
+>   `Verrou` int(11) DEFAULT NULL,
+>   PRIMARY KEY (`Kgra`)
+526,529c569,572
+<   `Khie` int(11) NOT NULL auto_increment,
+<   `Kuni` int(11) default NULL,
+<   `Ksub` int(11) default NULL,
+<   `Kser` int(11) default NULL,
+---
+>   `Khie` int(11) NOT NULL AUTO_INCREMENT,
+>   `Kuni` int(11) DEFAULT NULL,
+>   `Ksub` int(11) DEFAULT NULL,
+>   `Kser` int(11) DEFAULT NULL,
+533c576
+<   PRIMARY KEY  (`Khie`)
+---
+>   PRIMARY KEY (`Khie`)
+540,545c583,588
+<   `Khis` int(11) NOT NULL auto_increment,
+<   `LogUse` varchar(50) default NULL,
+<   `LibHis` varchar(50) default NULL,
+<   `LibSubc` varchar(50) default NULL,
+<   `DatExe` datetime default NULL,
+<   `TypExe` varchar(3) default NULL,
+---
+>   `Khis` int(11) NOT NULL AUTO_INCREMENT,
+>   `LogUse` varchar(50) DEFAULT NULL,
+>   `LibHis` varchar(50) DEFAULT NULL,
+>   `LibSubc` varchar(50) DEFAULT NULL,
+>   `DatExe` datetime DEFAULT NULL,
+>   `TypExe` varchar(3) DEFAULT NULL,
+547c590
+<   PRIMARY KEY  (`Khis`)
+---
+>   PRIMARY KEY (`Khis`)
+554,558c597,601
+<   `PID` int(11) NOT NULL auto_increment,
+<   `AGENT` int(11) default NULL,
+<   `V1` int(11) default NULL,
+<   `V2` int(11) default NULL,
+<   PRIMARY KEY  (`PID`)
+---
+>   `PID` int(11) NOT NULL AUTO_INCREMENT,
+>   `AGENT` int(11) DEFAULT NULL,
+>   `V1` int(11) DEFAULT NULL,
+>   `V2` int(11) DEFAULT NULL,
+>   PRIMARY KEY (`PID`)
+565c608
+<   `Kmela` int(11) NOT NULL auto_increment,
+---
+>   `Kmela` int(11) NOT NULL AUTO_INCREMENT,
+567c610
+<   `LibMelA` varchar(250) default NULL,
+---
+>   `LibMelA` varchar(250) DEFAULT NULL,
+569,570c612,613
+<   PRIMARY KEY  (`Kmela`)
+< ) ENGINE=MyISAM AUTO_INCREMENT=2074 DEFAULT CHARSET=latin1;
+---
+>   PRIMARY KEY (`Kmela`)
+> ) ENGINE=MyISAM AUTO_INCREMENT=3050 DEFAULT CHARSET=latin1;
+576c619
+<   `Kmele` int(11) NOT NULL auto_increment,
+---
+>   `Kmele` int(11) NOT NULL AUTO_INCREMENT,
+578,579c621,622
+<   `LibMelE` varchar(250) default NULL,
+<   PRIMARY KEY  (`Kmele`)
+---
+>   `LibMelE` varchar(250) DEFAULT NULL,
+>   PRIMARY KEY (`Kmele`)
+586c629
+<   `Kmels` int(11) NOT NULL auto_increment,
+---
+>   `Kmels` int(11) NOT NULL AUTO_INCREMENT,
+590c633
+<   PRIMARY KEY  (`Kmels`)
+---
+>   PRIMARY KEY (`Kmels`)
+597c640
+<   `Kmelu` int(11) NOT NULL auto_increment,
+---
+>   `Kmelu` int(11) NOT NULL AUTO_INCREMENT,
+601,602c644,645
+<   PRIMARY KEY  (`Kmelu`)
+< ) ENGINE=MyISAM AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
+---
+>   PRIMARY KEY (`Kmelu`)
+> ) ENGINE=MyISAM AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
+608c651
+<   `Kmelv` int(11) NOT NULL auto_increment,
+---
+>   `Kmelv` int(11) NOT NULL AUTO_INCREMENT,
+612c655
+<   PRIMARY KEY  (`Kmelv`)
+---
+>   PRIMARY KEY (`Kmelv`)
+614a658,666
+> DROP TABLE IF EXISTS `monblob`;
+> /*!40101 SET @saved_cs_client     = @@character_set_client */;
+> /*!40101 SET character_set_client = utf8 */;
+> CREATE TABLE `monblob` (
+>   `id_blob` int(11) NOT NULL AUTO_INCREMENT,
+>   `blob` blob NOT NULL,
+>   PRIMARY KEY (`id_blob`)
+> ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+> /*!40101 SET character_set_client = @saved_cs_client */;
+619c671
+<   `kmof` int(11) NOT NULL auto_increment,
+---
+>   `kmof` int(11) NOT NULL AUTO_INCREMENT,
+621,622c673,674
+<   PRIMARY KEY  (`kmof`)
+< ) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+---
+>   PRIMARY KEY (`kmof`)
+> ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+628c680
+<   `id_MPA` int(11) NOT NULL auto_increment,
+---
+>   `id_MPA` int(11) NOT NULL AUTO_INCREMENT,
+630,633c682,685
+<   `idMPALOLF` int(11) default NULL,
+<   `quotite_MPA` int(11) default NULL,
+<   `debut_MPA` datetime default NULL,
+<   `fin_MPA` datetime default NULL,
+---
+>   `idMPALOLF` int(11) DEFAULT NULL,
+>   `quotite_MPA` int(11) DEFAULT NULL,
+>   `debut_MPA` datetime DEFAULT NULL,
+>   `fin_MPA` datetime DEFAULT NULL,
+635c687
+<   PRIMARY KEY  (`id_MPA`)
+---
+>   PRIMARY KEY (`id_MPA`)
+642,643c694,695
+<   `idMPALOLF` int(11) NOT NULL auto_increment,
+<   `codeLOLF` varchar(16) default NULL,
+---
+>   `idMPALOLF` int(11) NOT NULL AUTO_INCREMENT,
+>   `codeLOLF` varchar(16) DEFAULT NULL,
+648c700
+<   PRIMARY KEY  (`idMPALOLF`)
+---
+>   PRIMARY KEY (`idMPALOLF`)
+655c707
+<   `Kgra` int(11) NOT NULL auto_increment,
+---
+>   `Kgra` int(11) NOT NULL AUTO_INCREMENT,
+657,662c709,714
+<   `LibGrac` varchar(50) default NULL,
+<   `LibGra` varchar(250) default NULL,
+<   `Gesper` int(11) default NULL,
+<   `Statut` varchar(100) default NULL,
+<   `CatFP` varchar(50) default NULL,
+<   `TechAdm` varchar(100) default NULL,
+---
+>   `LibGrac` varchar(50) DEFAULT NULL,
+>   `LibGra` varchar(250) DEFAULT NULL,
+>   `Gesper` int(11) DEFAULT NULL,
+>   `Statut` varchar(100) DEFAULT NULL,
+>   `CatFP` varchar(50) DEFAULT NULL,
+>   `TechAdm` varchar(100) DEFAULT NULL,
+665c717
+<   PRIMARY KEY  (`Kgra`)
+---
+>   PRIMARY KEY (`Kgra`)
+672c724
+<   `Kpar` int(11) NOT NULL auto_increment,
+---
+>   `Kpar` int(11) NOT NULL AUTO_INCREMENT,
+678,691c730,743
+<   `TSource` varchar(100) default NULL,
+<   `TUser` varchar(100) default NULL,
+<   `TBDD` varchar(100) default NULL,
+<   `TPasse` varchar(100) default NULL,
+<   `TProprio` varchar(100) default NULL,
+<   `TAcces` varchar(100) default NULL,
+<   `TServer` varchar(100) default NULL,
+<   `RSource` varchar(100) default NULL,
+<   `RUser` varchar(100) default NULL,
+<   `RBDD` varchar(100) default NULL,
+<   `RPasse` varchar(100) default NULL,
+<   `RProprio` varchar(100) default NULL,
+<   `RAcces` varchar(100) default NULL,
+<   `RServer` varchar(100) default NULL,
+---
+>   `TSource` varchar(100) DEFAULT NULL,
+>   `TUser` varchar(100) DEFAULT NULL,
+>   `TBDD` varchar(100) DEFAULT NULL,
+>   `TPasse` varchar(100) DEFAULT NULL,
+>   `TProprio` varchar(100) DEFAULT NULL,
+>   `TAcces` varchar(100) DEFAULT NULL,
+>   `TServer` varchar(100) DEFAULT NULL,
+>   `RSource` varchar(100) DEFAULT NULL,
+>   `RUser` varchar(100) DEFAULT NULL,
+>   `RBDD` varchar(100) DEFAULT NULL,
+>   `RPasse` varchar(100) DEFAULT NULL,
+>   `RProprio` varchar(100) DEFAULT NULL,
+>   `RAcces` varchar(100) DEFAULT NULL,
+>   `RServer` varchar(100) DEFAULT NULL,
+693c745
+<   PRIMARY KEY  (`Kpar`)
+---
+>   PRIMARY KEY (`Kpar`)
+700,704c752,756
+<   `Kparam` int(11) NOT NULL auto_increment,
+<   `Kage` int(11) default NULL,
+<   `Param` varchar(100) default NULL,
+<   `Value` varchar(100) default NULL,
+<   PRIMARY KEY  (`Kparam`)
+---
+>   `Kparam` int(11) NOT NULL AUTO_INCREMENT,
+>   `Kage` int(11) DEFAULT NULL,
+>   `Param` varchar(100) DEFAULT NULL,
+>   `Value` varchar(100) DEFAULT NULL,
+>   PRIMARY KEY (`Kparam`)
+712,714c764,766
+<   `IdHabilitation` int(11) default NULL,
+<   `IdAgent` int(11) default NULL,
+<   `IdContact` int(11) default NULL,
+---
+>   `IdHabilitation` int(11) DEFAULT NULL,
+>   `IdAgent` int(11) DEFAULT NULL,
+>   `IdContact` int(11) DEFAULT NULL,
+718,719c770,771
+<   `Actif` bit(1) default NULL,
+<   `DateDerCon` datetime default NULL
+---
+>   `Actif` bit(1) DEFAULT NULL,
+>   `DateDerCon` datetime DEFAULT NULL
+726,728c778,780
+<   `PID` int(11) NOT NULL auto_increment,
+<   `MATRI` varchar(50) default NULL,
+<   `PHOTO` varchar(50) default NULL,
+---
+>   `PID` int(11) NOT NULL AUTO_INCREMENT,
+>   `MATRI` varchar(50) DEFAULT NULL,
+>   `PHOTO` varchar(50) DEFAULT NULL,
+730,731c782,783
+<   `LOCK` int(11) default NULL,
+<   PRIMARY KEY  (`PID`)
+---
+>   `LOCK` int(11) DEFAULT NULL,
+>   PRIMARY KEY (`PID`)
+738,740c790,792
+<   `Kpst` int(11) NOT NULL auto_increment,
+<   `IDPos` varchar(10) default NULL,
+<   `Position` varchar(100) default NULL,
+---
+>   `Kpst` int(11) NOT NULL AUTO_INCREMENT,
+>   `IDPos` varchar(10) DEFAULT NULL,
+>   `Position` varchar(100) DEFAULT NULL,
+742c794
+<   `Ordre` smallint(6) default NULL,
+---
+>   `Ordre` smallint(6) DEFAULT NULL,
+744c796
+<   PRIMARY KEY  (`Kpst`)
+---
+>   PRIMARY KEY (`Kpst`)
+752,754c804,806
+<   `IdDepartement` int(11) default NULL,
+<   `IdZone` int(11) default NULL,
+<   `Code` varchar(50) default NULL,
+---
+>   `IdDepartement` int(11) DEFAULT NULL,
+>   `IdZone` int(11) DEFAULT NULL,
+>   `Code` varchar(50) DEFAULT NULL,
+758,768d809
+< DROP TABLE IF EXISTS `quotite`;
+< /*!40101 SET @saved_cs_client     = @@character_set_client */;
+< /*!40101 SET character_set_client = utf8 */;
+< CREATE TABLE `quotite` (
+<   `Kquo` int(11) NOT NULL auto_increment,
+<   `Kage` int(11) NOT NULL default '0',
+<   `Quotité` int(11) NOT NULL default '0',
+<   `DatEta` datetime default NULL,
+<   PRIMARY KEY  (`Kquo`)
+< ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+< /*!40101 SET character_set_client = @saved_cs_client */;
+773c814
+<   `id_recapitulatif` int(11) NOT NULL auto_increment,
+---
+>   `id_recapitulatif` int(11) NOT NULL AUTO_INCREMENT,
+780,781c821,822
+<   PRIMARY KEY  (`id_recapitulatif`)
+< ) ENGINE=MyISAM AUTO_INCREMENT=78 DEFAULT CHARSET=latin1;
+---
+>   PRIMARY KEY (`id_recapitulatif`)
+> ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+787,790c828,831
+<   `kRolConsult` int(11) NOT NULL auto_increment,
+<   `krol` int(11) default NULL,
+<   `KConsult` int(11) default NULL,
+<   PRIMARY KEY  (`kRolConsult`)
+---
+>   `kRolConsult` int(11) NOT NULL AUTO_INCREMENT,
+>   `krol` int(11) DEFAULT NULL,
+>   `KConsult` int(11) DEFAULT NULL,
+>   PRIMARY KEY (`kRolConsult`)
+797,800c838,841
+<   `Krol` int(11) NOT NULL auto_increment,
+<   `CodRol` int(11) default NULL,
+<   `LibRolc` varchar(50) default NULL,
+<   `LibRol` varchar(150) default NULL,
+---
+>   `Krol` int(11) NOT NULL AUTO_INCREMENT,
+>   `CodRol` int(11) DEFAULT NULL,
+>   `LibRolc` varchar(50) DEFAULT NULL,
+>   `LibRol` varchar(150) DEFAULT NULL,
+802c843
+<   PRIMARY KEY  (`Krol`)
+---
+>   PRIMARY KEY (`Krol`)
+809c850
+<   `Ksav` int(11) NOT NULL auto_increment,
+---
+>   `Ksav` int(11) NOT NULL AUTO_INCREMENT,
+811,814c852,855
+<   `LibSavc` varchar(50) default NULL,
+<   `LibSav` varchar(100) default NULL,
+<   `DatSav` datetime default NULL,
+<   `Troncage` smallint(6) default NULL,
+---
+>   `LibSavc` varchar(50) DEFAULT NULL,
+>   `LibSav` varchar(100) DEFAULT NULL,
+>   `DatSav` datetime DEFAULT NULL,
+>   `Troncage` smallint(6) DEFAULT NULL,
+816c857
+<   PRIMARY KEY  (`Ksav`)
+---
+>   PRIMARY KEY (`Ksav`)
+823c864
+<   `Kser` int(11) NOT NULL auto_increment,
+---
+>   `Kser` int(11) NOT NULL AUTO_INCREMENT,
+825,829c866,870
+<   `Kadr` int(11) default NULL,
+<   `LibSerC` varchar(50) default NULL,
+<   `LibSer` varchar(250) default NULL,
+<   `Telephone` varchar(20) default NULL,
+<   `Fax` varchar(20) default NULL,
+---
+>   `Kadr` int(11) DEFAULT NULL,
+>   `LibSerC` varchar(50) DEFAULT NULL,
+>   `LibSer` varchar(250) DEFAULT NULL,
+>   `Telephone` varchar(20) DEFAULT NULL,
+>   `Fax` varchar(20) DEFAULT NULL,
+831c872
+<   `CodHie` int(11) default NULL,
+---
+>   `CodHie` int(11) DEFAULT NULL,
+833c874
+<   `Archive` tinyint(4) default NULL,
+---
+>   `Archive` tinyint(4) DEFAULT NULL,
+835,836c876,877
+<   `Code` varchar(10) default NULL,
+<   PRIMARY KEY  (`Kser`)
+---
+>   `Code` varchar(10) DEFAULT NULL,
+>   PRIMARY KEY (`Kser`)
+843c884
+<   `Ksoc` int(11) NOT NULL auto_increment,
+---
+>   `Ksoc` int(11) NOT NULL AUTO_INCREMENT,
+846,847c887,888
+<   `LibSocc` varchar(50) default NULL,
+<   `LibSoc` varchar(100) default NULL,
+---
+>   `LibSocc` varchar(50) DEFAULT NULL,
+>   `LibSoc` varchar(100) DEFAULT NULL,
+851,852c892,893
+<   `Telephone` varchar(20) default NULL,
+<   `Fax` varchar(20) default NULL,
+---
+>   `Telephone` varchar(20) DEFAULT NULL,
+>   `Fax` varchar(20) DEFAULT NULL,
+854c895
+<   PRIMARY KEY  (`Ksoc`)
+---
+>   PRIMARY KEY (`Ksoc`)
+857,867d897
+< DROP TABLE IF EXISTS `sous_domaines`;
+< /*!40101 SET @saved_cs_client     = @@character_set_client */;
+< /*!40101 SET character_set_client = utf8 */;
+< CREATE TABLE `sous_domaines` (
+<   `ID_SOUS_DOMAINES` decimal(3,0) NOT NULL,
+<   `ID_DOMAINE` decimal(3,0) NOT NULL,
+<   `NOM_SOUS_DOMAINES` int(11) NOT NULL,
+<   PRIMARY KEY  (`ID_SOUS_DOMAINES`),
+<   KEY `FK_APPARTENIR` (`ID_DOMAINE`)
+< ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+< /*!40101 SET character_set_client = @saved_cs_client */;
+872c902
+<   `Ksrh` int(11) NOT NULL auto_increment,
+---
+>   `Ksrh` int(11) NOT NULL AUTO_INCREMENT,
+878c908
+<   PRIMARY KEY  (`Ksrh`)
+---
+>   PRIMARY KEY (`Ksrh`)
+885c915
+<   `Ksub` int(11) NOT NULL auto_increment,
+---
+>   `Ksub` int(11) NOT NULL AUTO_INCREMENT,
+887,893c917,923
+<   `Kadr` int(11) default NULL,
+<   `LibSubC` varchar(50) default NULL,
+<   `LibSub` varchar(250) default NULL,
+<   `HorSect` char(10) default NULL,
+<   `Code` char(10) default NULL,
+<   `Telephone` varchar(20) default NULL,
+<   `Fax` varchar(20) default NULL,
+---
+>   `Kadr` int(11) DEFAULT NULL,
+>   `LibSubC` varchar(50) DEFAULT NULL,
+>   `LibSub` varchar(250) DEFAULT NULL,
+>   `HorSect` char(10) DEFAULT NULL,
+>   `Code` char(10) DEFAULT NULL,
+>   `Telephone` varchar(20) DEFAULT NULL,
+>   `Fax` varchar(20) DEFAULT NULL,
+895c925
+<   `CodHie` int(11) default NULL,
+---
+>   `CodHie` int(11) DEFAULT NULL,
+897c927
+<   `Archive` tinyint(4) default NULL,
+---
+>   `Archive` tinyint(4) DEFAULT NULL,
+899,902c929,932
+<   `subGESPER` varchar(4) default NULL,
+<   `Kets` int(11) default NULL,
+<   PRIMARY KEY  (`Ksub`)
+< ) ENGINE=MyISAM AUTO_INCREMENT=173 DEFAULT CHARSET=latin1;
+---
+>   `subGESPER` varchar(4) DEFAULT NULL,
+>   `Kets` int(11) DEFAULT NULL,
+>   PRIMARY KEY (`Ksub`)
+> ) ENGINE=MyISAM AUTO_INCREMENT=174 DEFAULT CHARSET=latin1;
+908,918c938,948
+<   `Matri` varchar(10) default NULL,
+<   `NomPre` varchar(30) default NULL,
+<   `DatCre` datetime default NULL,
+<   `DatOuv` datetime default NULL,
+<   `DatMod` datetime default NULL,
+<   `DatClo` datetime default NULL,
+<   `Horcode` varchar(6) default NULL,
+<   `LibCourt` varchar(20) default NULL,
+<   `IneTP` smallint(6) default NULL,
+<   `InHS` smallint(6) default NULL,
+<   `DatHophJou` datetime default NULL,
+---
+>   `Matri` varchar(10) DEFAULT NULL,
+>   `NomPre` varchar(30) DEFAULT NULL,
+>   `DatCre` datetime DEFAULT NULL,
+>   `DatOuv` datetime DEFAULT NULL,
+>   `DatMod` datetime DEFAULT NULL,
+>   `DatClo` datetime DEFAULT NULL,
+>   `Horcode` varchar(6) DEFAULT NULL,
+>   `LibCourt` varchar(20) DEFAULT NULL,
+>   `IneTP` smallint(6) DEFAULT NULL,
+>   `InHS` smallint(6) DEFAULT NULL,
+>   `DatHophJou` datetime DEFAULT NULL,
+922,931d951
+< DROP TABLE IF EXISTS `travaille`;
+< /*!40101 SET @saved_cs_client     = @@character_set_client */;
+< /*!40101 SET character_set_client = utf8 */;
+< CREATE TABLE `travaille` (
+<   `ID_SOUS_DOMAINES` decimal(3,0) NOT NULL,
+<   `ID_MATRICULE` int(11) NOT NULL,
+<   PRIMARY KEY  (`ID_SOUS_DOMAINES`,`ID_MATRICULE`),
+<   KEY `FK_TRAVAILLE2` (`ID_MATRICULE`)
+< ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+< /*!40101 SET character_set_client = @saved_cs_client */;
+937,939c957,959
+<   `trombi` longtext NOT NULL,
+<   PRIMARY KEY  (`kage`)
+< ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+---
+>   `trombi` longtext,
+>   PRIMARY KEY (`kage`)
+> ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+945c965
+<   `id_formation` int(11) NOT NULL auto_increment,
+---
+>   `id_formation` int(11) NOT NULL AUTO_INCREMENT,
+948,949c968,969
+<   PRIMARY KEY  (`id_formation`)
+< ) ENGINE=MyISAM AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
+---
+>   PRIMARY KEY (`id_formation`)
+> ) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
+955,960c975,980
+<   `Kuni` int(11) NOT NULL auto_increment,
+<   `Kadr` int(11) default NULL,
+<   `LibUnic` varchar(50) default NULL,
+<   `LibUni` varchar(250) default NULL,
+<   `Telephone` varchar(20) default NULL,
+<   `Fax` varchar(20) default NULL,
+---
+>   `Kuni` int(11) NOT NULL AUTO_INCREMENT,
+>   `Kadr` int(11) DEFAULT NULL,
+>   `LibUnic` varchar(50) DEFAULT NULL,
+>   `LibUni` varchar(250) DEFAULT NULL,
+>   `Telephone` varchar(20) DEFAULT NULL,
+>   `Fax` varchar(20) DEFAULT NULL,
+962c982
+<   `CodHie` int(11) default NULL,
+---
+>   `CodHie` int(11) DEFAULT NULL,
+964c984
+<   `Archive` tinyint(4) default NULL,
+---
+>   `Archive` tinyint(4) DEFAULT NULL,
+966,969c986,989
+<   `uniGESPER` varchar(8) default NULL,
+<   `Code` varchar(10) default NULL,
+<   `Kets` int(11) default NULL,
+<   PRIMARY KEY  (`Kuni`)
+---
+>   `uniGESPER` varchar(8) DEFAULT NULL,
+>   `Code` varchar(10) DEFAULT NULL,
+>   `Kets` int(11) DEFAULT NULL,
+>   PRIMARY KEY (`Kuni`)
+976c996
+<   `Kuseann` int(11) NOT NULL auto_increment,
+---
+>   `Kuseann` int(11) NOT NULL AUTO_INCREMENT,
+980c1000
+<   PRIMARY KEY  (`Kuseann`)
+---
+>   PRIMARY KEY (`Kuseann`)
+987c1007
+<   `Kuse` int(11) NOT NULL auto_increment,
+---
+>   `Kuse` int(11) NOT NULL AUTO_INCREMENT,
+990c1010
+<   `DatDerCon` datetime default NULL,
+---
+>   `DatDerCon` datetime DEFAULT NULL,
+997c1017
+<   `Consult` tinyint(4) default NULL,
+---
+>   `Consult` tinyint(4) DEFAULT NULL,
+999c1019
+<   PRIMARY KEY  (`Kuse`)
+---
+>   PRIMARY KEY (`Kuse`)
+1002,1003c1022,1023
+< DROP TABLE IF EXISTS `v_anubis`;
+< /*!50001 DROP VIEW IF EXISTS `v_anubis`*/;
+---
+> DROP TABLE IF EXISTS `v_BpcAndroid`;
+> /*!50001 DROP VIEW IF EXISTS `v_BpcAndroid`*/;
+1006c1026
+< /*!50001 CREATE VIEW `v_anubis` AS SELECT 
+---
+> /*!50001 CREATE VIEW `v_BpcAndroid` AS SELECT 
+1010,1011c1030
+<  1 AS `Poste`,
+<  1 AS `Portable`,
+---
+>  1 AS `Telephone`,
+1013,1015d1031
+<  1 AS `LIBELLE_POSTE`,
+<  1 AS `FAMILLE_PROF`,
+<  1 AS `EMPLOI_TYPE`,
+1018,1019c1034,1035
+< DROP TABLE IF EXISTS `v_bpcandroid`;
+< /*!50001 DROP VIEW IF EXISTS `v_bpcandroid`*/;
+---
+> DROP TABLE IF EXISTS `v_anubis`;
+> /*!50001 DROP VIEW IF EXISTS `v_anubis`*/;
+1022c1038
+< /*!50001 CREATE VIEW `v_bpcandroid` AS SELECT 
+---
+> /*!50001 CREATE VIEW `v_anubis` AS SELECT 
+1026c1042,1043
+<  1 AS `Telephone`,
+---
+>  1 AS `Poste`,
+>  1 AS `Portable`,
+1027a1045,1047
+>  1 AS `LIBELLE_POSTE`,
+>  1 AS `FAMILLE_PROF`,
+>  1 AS `EMPLOI_TYPE`,
+1034,1035c1054,1055
+<   `Kvas` int(11) NOT NULL auto_increment,
+<   `NomAss` varchar(250) default NULL,
+---
+>   `Kvas` int(11) NOT NULL AUTO_INCREMENT,
+>   `NomAss` varchar(250) DEFAULT NULL,
+1037c1057
+<   PRIMARY KEY  (`Kvas`)
+---
+>   PRIMARY KEY (`Kvas`)
+1044,1045c1064,1065
+<   `Kvmk` int(11) NOT NULL auto_increment,
+<   `Marque` varchar(250) default NULL,
+---
+>   `Kvmk` int(11) NOT NULL AUTO_INCREMENT,
+>   `Marque` varchar(250) DEFAULT NULL,
+1047c1067
+<   PRIMARY KEY  (`Kvmk`)
+---
+>   PRIMARY KEY (`Kvmk`)
+1054c1074
+<   `Kvmd` int(11) NOT NULL auto_increment,
+---
+>   `Kvmd` int(11) NOT NULL AUTO_INCREMENT,
+1056,1057c1076,1077
+<   `Modele` varchar(250) default NULL,
+<   `CV` int(11) default NULL,
+---
+>   `Modele` varchar(250) DEFAULT NULL,
+>   `CV` int(11) DEFAULT NULL,
+1059c1079
+<   PRIMARY KEY  (`Kvmd`)
+---
+>   PRIMARY KEY (`Kvmd`)
+1066,1069c1086,1089
+<   `Kver` int(11) NOT NULL auto_increment,
+<   `LibVer` varchar(200) default NULL,
+<   `DatVer` datetime default NULL,
+<   `Numero` varchar(10) default NULL,
+---
+>   `Kver` int(11) NOT NULL AUTO_INCREMENT,
+>   `LibVer` varchar(200) DEFAULT NULL,
+>   `DatVer` datetime DEFAULT NULL,
+>   `Numero` varchar(10) DEFAULT NULL,
+1073c1093
+<   PRIMARY KEY  (`Kver`)
+---
+>   PRIMARY KEY (`Kver`)
+1076,1089d1095
+< DROP TABLE IF EXISTS `visiom`;
+< /*!40101 SET @saved_cs_client     = @@character_set_client */;
+< /*!40101 SET character_set_client = utf8 */;
+< CREATE TABLE `visiom` (
+<   `kage` int(11) NOT NULL,
+<   `LIBELLE_POSTE` varchar(73) default NULL,
+<   `FAMILLE_PROF` varchar(46) default NULL,
+<   `EMPLOI_TYPE` varchar(64) default NULL,
+<   `REHUCIT` varchar(23) default NULL,
+<   `NOM` varchar(16) default NULL,
+<   `PRENOM` varchar(15) default NULL,
+<   `DATE_NAISSANCE` varchar(23) default NULL
+< ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+< /*!40101 SET character_set_client = @saved_cs_client */;
+1094c1100
+<   `kvm` int(11) NOT NULL auto_increment,
+---
+>   `kvm` int(11) NOT NULL AUTO_INCREMENT,
+1097,1102c1103,1108
+<   `date_visite` date default NULL,
+<   `heure_visite` time default NULL,
+<   `resultats` int(11) default NULL,
+<   `commentaires` varchar(255) default NULL,
+<   PRIMARY KEY  (`kvm`)
+< ) ENGINE=MyISAM AUTO_INCREMENT=776 DEFAULT CHARSET=utf8;
+---
+>   `date_visite` date DEFAULT NULL,
+>   `heure_visite` time DEFAULT NULL,
+>   `resultats` int(11) DEFAULT NULL,
+>   `commentaires` varchar(255) DEFAULT NULL,
+>   PRIMARY KEY (`kvm`)
+> ) ENGINE=MyISAM AUTO_INCREMENT=788 DEFAULT CHARSET=utf8;
+1108c1114
+<   `kvm_natures` int(11) NOT NULL auto_increment,
+---
+>   `kvm_natures` int(11) NOT NULL AUTO_INCREMENT,
+1110c1116
+<   PRIMARY KEY  (`kvm_natures`)
+---
+>   PRIMARY KEY (`kvm_natures`)
+1117c1123
+<   `kvm_resultats` int(11) NOT NULL auto_increment,
+---
+>   `kvm_resultats` int(11) NOT NULL AUTO_INCREMENT,
+1119c1125
+<   PRIMARY KEY  (`kvm_resultats`)
+---
+>   PRIMARY KEY (`kvm_resultats`)
+1122,1123c1128,1153
+< /*!50001 DROP VIEW IF EXISTS `_bpcandroid`*/;
+< /*!50001 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `_bpcandroid` AS select distinct `bpclight`.`agents`.`Nom` AS `Nom`,`bpclight`.`agents`.`Prenom` AS `Prenom`,`bpclight`.`agents`.`Matri` AS `Matri`,`bpclight`.`agents`.`Telephone` AS `Telephone`,`bpclight`.`mela`.`LibMelA` AS `LibMelA`,`bpclight`.`batiments`.`LibBatC` AS `LibBatC` from ((`agents` join `batiments`) join `mela`) where ((`bpclight`.`agents`.`Kage` = `bpclight`.`mela`.`Kage`) and (`bpclight`.`agents`.`Kbat` = `bpclight`.`batiments`.`Kbat`)) order by `bpclight`.`agents`.`Nom` */;
+---
+> /*!50001 DROP VIEW IF EXISTS `_BpcAndroid`*/;
+> /*!50001 SET @saved_cs_client          = @@character_set_client */;
+> /*!50001 SET @saved_cs_results         = @@character_set_results */;
+> /*!50001 SET @saved_col_connection     = @@collation_connection */;
+> /*!50001 SET character_set_client      = utf8 */;
+> /*!50001 SET character_set_results     = utf8 */;
+> /*!50001 SET collation_connection      = utf8_general_ci */;
+> /*!50001 CREATE ALGORITHM=UNDEFINED */
+> /*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
+> /*!50001 VIEW `_BpcAndroid` AS select distinct `agents`.`Nom` AS `Nom`,`agents`.`Prenom` AS `Prenom`,`agents`.`Matri` AS `Matri`,`agents`.`Telephone` AS `Telephone`,`mela`.`LibMelA` AS `LibMelA`,`batiments`.`LibBatC` AS `LibBatC` from ((`agents` join `batiments`) join `mela`) where ((`agents`.`Kage` = `mela`.`Kage`) and (`agents`.`Kbat` = `batiments`.`Kbat`)) order by `agents`.`Nom` */;
+> /*!50001 SET character_set_client      = @saved_cs_client */;
+> /*!50001 SET character_set_results     = @saved_cs_results */;
+> /*!50001 SET collation_connection      = @saved_col_connection */;
+> /*!50001 DROP VIEW IF EXISTS `v_BpcAndroid`*/;
+> /*!50001 SET @saved_cs_client          = @@character_set_client */;
+> /*!50001 SET @saved_cs_results         = @@character_set_results */;
+> /*!50001 SET @saved_col_connection     = @@collation_connection */;
+> /*!50001 SET character_set_client      = utf8 */;
+> /*!50001 SET character_set_results     = utf8 */;
+> /*!50001 SET collation_connection      = utf8_general_ci */;
+> /*!50001 CREATE ALGORITHM=UNDEFINED */
+> /*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
+> /*!50001 VIEW `v_BpcAndroid` AS select distinct `agents`.`Nom` AS `Nom`,`agents`.`Prenom` AS `Prenom`,`agents`.`Matri` AS `Matri`,`agents`.`Telephone` AS `Telephone`,`mela`.`LibMelA` AS `LibMelA`,`batiments`.`LibBatC` AS `LibBatC` from ((`agents` join `batiments`) join `mela`) where ((`agents`.`Kage` = `mela`.`Kage`) and (`agents`.`Kbat` = `batiments`.`Kbat`)) order by `agents`.`Nom` */;
+> /*!50001 SET character_set_client      = @saved_cs_client */;
+> /*!50001 SET character_set_results     = @saved_cs_results */;
+> /*!50001 SET collation_connection      = @saved_col_connection */;
+1125,1127c1155,1166
+< /*!50001 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_anubis` AS select distinct `bpclight`.`agents`.`Nom` AS `Nom`,`bpclight`.`agents`.`Prenom` AS `Prenom`,`bpclight`.`agents`.`Matri` AS `Matri`,`bpclight`.`agents`.`Poste` AS `Poste`,`bpclight`.`agents`.`Portable` AS `Portable`,`bpclight`.`mela`.`LibMelA` AS `LibMelA`,`bpclight`.`visiom`.`LIBELLE_POSTE` AS `LIBELLE_POSTE`,`bpclight`.`visiom`.`FAMILLE_PROF` AS `FAMILLE_PROF`,`bpclight`.`visiom`.`EMPLOI_TYPE` AS `EMPLOI_TYPE`,`bpclight`.`batiments`.`LibBatC` AS `LibBatC` from (((`agents` join `mela`) join `visiom`) join `batiments`) where ((`bpclight`.`agents`.`Kage` = `bpclight`.`mela`.`Kage`) and (`bpclight`.`agents`.`Kage` = `bpclight`.`visiom`.`kage`) and (`bpclight`.`agents`.`Kbat` = `bpclight`.`batiments`.`Kbat`) and (`bpclight`.`agents`.`Actif` = 1) and (`bpclight`.`mela`.`LibMelA` like _latin1'%@cerema%')) order by `bpclight`.`agents`.`Nom` */;
+< /*!50001 DROP VIEW IF EXISTS `v_bpcandroid`*/;
+< /*!50001 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_bpcandroid` AS select distinct `bpclight`.`agents`.`Nom` AS `Nom`,`bpclight`.`agents`.`Prenom` AS `Prenom`,`bpclight`.`agents`.`Matri` AS `Matri`,`bpclight`.`agents`.`Telephone` AS `Telephone`,`bpclight`.`mela`.`LibMelA` AS `LibMelA`,`bpclight`.`batiments`.`LibBatC` AS `LibBatC` from ((`agents` join `batiments`) join `mela`) where ((`bpclight`.`agents`.`Kage` = `bpclight`.`mela`.`Kage`) and (`bpclight`.`agents`.`Kbat` = `bpclight`.`batiments`.`Kbat`)) order by `bpclight`.`agents`.`Nom` */;
+---
+> /*!50001 SET @saved_cs_client          = @@character_set_client */;
+> /*!50001 SET @saved_cs_results         = @@character_set_results */;
+> /*!50001 SET @saved_col_connection     = @@collation_connection */;
+> /*!50001 SET character_set_client      = utf8 */;
+> /*!50001 SET character_set_results     = utf8 */;
+> /*!50001 SET collation_connection      = utf8_general_ci */;
+> /*!50001 CREATE ALGORITHM=UNDEFINED */
+> /*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
+> /*!50001 VIEW `v_anubis` AS select distinct `agents`.`Nom` AS `Nom`,`agents`.`Prenom` AS `Prenom`,`agents`.`Matri` AS `Matri`,`agents`.`Poste` AS `Poste`,`agents`.`Portable` AS `Portable`,`mela`.`LibMelA` AS `LibMelA`,`VISIOM`.`LIBELLE_POSTE` AS `LIBELLE_POSTE`,`VISIOM`.`FAMILLE_PROF` AS `FAMILLE_PROF`,`VISIOM`.`EMPLOI_TYPE` AS `EMPLOI_TYPE`,`batiments`.`LibBatC` AS `LibBatC` from (((`agents` join `mela`) join `VISIOM`) join `batiments`) where ((`agents`.`Kage` = `mela`.`Kage`) and (`agents`.`Kage` = `VISIOM`.`kage`) and (`agents`.`Kbat` = `batiments`.`Kbat`) and (`agents`.`Actif` = 1) and (`mela`.`LibMelA` like '%@cerema%')) order by `agents`.`Nom` */;
+> /*!50001 SET character_set_client      = @saved_cs_client */;
+> /*!50001 SET character_set_results     = @saved_cs_results */;
+> /*!50001 SET collation_connection      = @saved_col_connection */;
