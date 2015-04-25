@@ -5,7 +5,7 @@
  *
  */
 
-$_VERSION = "0.8.9d";
+$_VERSION = "0.9.0a";
 
 CDN = "http://omneedia.github.io/cdn"; //PROD
 //CDN = "/cdn"; // DEBUG
@@ -1857,7 +1857,6 @@ function build_production()
 			if (argv.indexOf('publish')>-1)
 			{
 				if (!ocfg.current["publish.host"]) { console.log('  ! Publishing failed. No publish.host defined'.yellow); return; }
-				if (!ocfg.current["publish.password"]) { console.log('  ! Publishing failed. No publish.password defined'.yellow); return; }
 				// get last drone
 				var p=glob.readdirSyncRecursive(PROJECT_HOME+path.sep+'builds'+path.sep+'production');
 				if (p.length==0) {
@@ -1866,12 +1865,16 @@ function build_production()
 				};
 				console.log('  - Publishing drone v'+p[p.length-1].split(require('path').sep)[0]);
 				if (ocfg.current["publish.port"]) var port=ocfg.current["publish.port"]; else var port=9191;
-				var req = Request.post("http://"+ocfg.current["publish.host"]+":"+ocfg.current["publish.port"]+"/upload", function (err, resp, body) {
-				  if (err) {
-					console.log('  ! Publishing failed. Check your config'.yellow);
-				  } else {
-					console.log('  Done.');
-				  }
+				console.log("http://"+ocfg.current["publish.host"]+":"+port+"/upload");
+				var req = Request.post("http://"+ocfg.current["publish.host"]+":"+port+"/upload", function (err, resp, body) {
+					 console.log(err);
+					 console.log(resp);
+					 console.log(body);
+					 if (err) {
+						console.log('  ! Publishing failed. Check your config'.yellow);
+					 } else {
+						console.log('  Done.');
+					 }
 				});
 				var form = req.form();
 				form.append('file', fs.createReadStream(PROJECT_HOME+path.sep+'builds'+path.sep+'production'+path.sep+p[p.length-1]));
@@ -2770,7 +2773,6 @@ asciimo.write(" omneedia", "Colossal", function(art){
 	{
 		if (argv.indexOf('build')>-1) return;
 		if (!ocfg.current["publish.host"]) { console.log('  ! Publishing failed. No publish.host defined'.yellow); return; }
-		if (!ocfg.current["publish.password"]) { console.log('  ! Publishing failed. No publish.password defined'.yellow); return; }
 		// get last drone
 		var p=glob.readdirSyncRecursive(PROJECT_HOME+path.sep+'builds'+path.sep+'production');
 		if (p.length==0) {
@@ -2779,7 +2781,8 @@ asciimo.write(" omneedia", "Colossal", function(art){
 		};
 		console.log('  - Publishing drone v'+p[p.length-1].split(require('path').sep)[0]);
 		if (ocfg.current["publish.port"]) var port=ocfg.current["publish.port"]; else var port=9191;
-		var req = Request.post("http://"+ocfg.current["publish.host"]+":"+ocfg.current["publish.port"]+"/upload", function (err, resp, body) {
+		console.log("http://"+ocfg.current["publish.host"]+":"+port+"/upload");
+		var req = request.post("http://"+ocfg.current["publish.host"]+":"+port+"/upload", function (err, resp, body) {
 		  if (err) {
 			console.log('  ! Publishing failed. Check your config'.yellow);
 		  } else {
